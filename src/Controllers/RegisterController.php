@@ -88,6 +88,7 @@ class RegisterController extends BaseController
                     'text' => '<p>Our site is invitation only. If you received an invitation, please try the link in the email again.</p>'
                 ]);
 
+
         } elseif ($invitationRequired && !is_null($token)) {
             $invitation = UserInvitation::token($request->token)->first();
             $email = $invitation->email;
