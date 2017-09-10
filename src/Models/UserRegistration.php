@@ -231,7 +231,7 @@ class UserRegistration extends Model
     {
         return $query->whereHas('type', function ($query) use ($typeSlug) {
             $query->where('slug', $typeSlug);
-        })->first();
+        });
     }
 
     public function scopeUsername(Builder $query, string $username): Builder
