@@ -75,10 +75,12 @@ class RegisterController extends BaseController
         $invitationRequestable = config('registered.invitations.requestable');
         $token = $request->token;
 
+        $hasOwner = (UserRegistration::type('owners')->count() > 0);
         $view = view('registered::workflow-registration.register')
             ->with('invitationRequired', $invitationRequired)
             ->with('invitationRequestable', $invitationRequestable)
-            ->with('invitationToken', $token);
+            ->with('invitationToken', $token)
+            ->with('hasOwner', $hasOwner);
         if ($invitationRequired && is_null($token)) {
             return $view
                 ->with('message', [

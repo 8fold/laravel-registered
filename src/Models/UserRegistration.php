@@ -37,22 +37,10 @@ class UserRegistration extends Model
         'token'
     ];
 
-    // static public function belongsToUserClassName()
-    // {
-    //     return config('registered.user_model');
-    // }
-
     static public function invitationRequired()
     {
         return config('registered.invitation_required');
     }
-
-    // static public function withUsername(string $username)
-    // {
-    //     return static::whereHas('user', function ($query) use ($username) {
-    //         $query->where('username', $username);
-    //     })->first();
-    // }
 
     static public function isProfileArea()
     {
