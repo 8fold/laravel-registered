@@ -1,0 +1,50 @@
+{
+    "name": "8fold/8fold-registration-management-laravel",
+    "description": "Package for Laravel 5.5 to register and sign in users.",
+    "type": "project",
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Josh Bruce",
+            "email": "josh@joshuabruce.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.0",
+        "laravel/framework": "5.5.*",
+        "laravel/tinker": "^1.0",
+        "doctrine/dbal": "^2.5",
+        "watson/active": "2.0.*"
+    },
+    "require-dev": {
+        "fzaninotto/faker": "~1.4",
+        "mockery/mockery": "0.9.*",
+        "phpunit/phpunit": "~5.7",
+        "symfony/css-selector": "3.1.*",
+        "symfony/dom-crawler": "3.1.*"
+    },
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Eightfold\\Registered\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "classmap": [
+            "tests/TestCase.php"
+        ]
+    },
+    "config": {
+        "preferred-install": "dist",
+        "platform": {
+            "php": "7.0.12"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Eightfold\\RegistrationManagementLaravel\\RegisteredServiceProvider"
+            ]
+        }
+    }
+}

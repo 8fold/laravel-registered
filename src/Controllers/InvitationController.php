@@ -1,0 +1,92 @@
+<?php
+
+namespace Eightfold\RegistrationManagementLaravel\Controllers;
+
+use Eightfold\RegistrationManagementLaravel\Controllers\BaseController;
+
+use Auth;
+use Validator;
+use Illuminate\Http\Request;
+
+use Eightfold\RegistrationManagementLaravel\Models\UserInvitation;
+use Eightfold\RegistrationManagementLaravel\Models\UserType;
+use Eightfold\RegistrationManagementLaravel\Models\UserEmailAddress;
+
+class InvitationController extends BaseController
+{
+    public function index()
+    {
+        $registration = Auth::user()->registration;
+        $inviteCountString = '';
+        $canInvite = true;
+        if ($registration->type->slug == 'owners') {
+            $inviteCountString = 'You can send an unlimited number of invitations.';  
+
+        } else {
+            $invitationsMax = 0;
+            $invitationsSent = $registration->sentInvitations->count();
+            $remainingInvitations = $invitationsMax - $invitationsSent;
+
+            $inviteCountString = 'You have <b>'. $remainingInvitations .'</b> of <b>'. $invitationsMax .' available.</b>';
+            $canInvite = ($remainingInvitations > 0) ? true : false;
+
+        }
+
+        $unclaimed = $registration->unclaimedInvitations;
+        $claimed = $registration->claimedInvitations;
+        $userTypeOptions = UserType::selectOptions();
+
+        return view('registered::workflow-invitation.invitations')
+            ->with('inviteCountString', $inviteCountString)
+            ->with('unclaimedInvitations', $unclaimed)
+            ->with('claimedInvitations', $claimed)
+            ->with('canInvite', $canInvite)
+            ->with('userTypeOptions', $userTypeOptions);
+    }
+
+    public function sendInvite(Request $request)
+    {
+        $this->validator($request->all())->validate();
+        $email = $request->email;
+
+        $slug = $request->user_type;
+        $type = UserType::slug($slug)->first();
+        
+        $registration = Auth::user()->registration;
+
+        UserInvitation::invite($email, $type, $registration);
+        
+        return redirect('invitations')
+            ->with('message', [
+                    'type' => 'success',
+                    'title' => 'Invitation sent!'
+                ]);
+    }
+
+    public function resendInvite($invitationKey)
+    {
+        $invitation = UserInvitation::publicKey($invitationKey)->first();
+        if (is_null($invitation)) {
+            return back()
+                ->with('message', [
+                        'type' => 'warning',
+                        'title' => 'Invitation could not be found',
+                        'text' => 'Either I could not locate the invitation or I could not locate the associated sender of the invitation. Please try again.'
+                    ]);
+        }
+
+        UserInvitation::invite(
+            $invitation->email, 
+            $invitation->type, 
+            $invitation->senderRegistration);
+
+        return redirect('invitations');
+    }
+
+    private function validator(array $data)
+    {
+        return Validator::make($data, [
+            'email' => UserEmailAddress::validation()
+        ]);
+    }
+}
