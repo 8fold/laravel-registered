@@ -45,7 +45,7 @@ class UserType extends Authenticatable
     }
 
     /** Scopes */
-    public function scopeSlug(Builder $query, string $slug): Builder
+    public function scopeWithSlug(Builder $query, string $slug): Builder
     {
         return $query->where('slug', $slug);
     }

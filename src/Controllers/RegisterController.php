@@ -90,7 +90,7 @@ class RegisterController extends BaseController
 
 
         } elseif ($invitationRequired && !is_null($token)) {
-            $invitation = UserInvitation::token($request->token)->first();
+            $invitation = UserInvitation::withToken($request->token)->first();
             $email = $invitation->email;
             return $view->with('email', $email);
 
@@ -108,8 +108,8 @@ class RegisterController extends BaseController
     {
         $this->validateRegistration($request);
         $invitation = null;
-        if (config('registered.invitations.required')) {
-            $invitation = UserInvitation::token($request->invitation_token)
+        if (config('registered.invitations.required') && !is_null($request->invitation_token)) {
+            $invitation = UserInvitation::withToken($request->invitation_token)
                 ->code($request->invite_code)
                 ->first();
         }
@@ -126,8 +126,8 @@ class RegisterController extends BaseController
         $type = null;
         if (is_null($invitation)) {
             $type = (UserRegistration::all()->count() == 0)
-                ? UserType::slug('owners')
-                : UserType::slug('users');
+                ? UserType::withSlug('owners')->first()
+                : UserType::withSlug('users')->first();
 
         } else {
             $type = UserType::find($invitation->user_type_id);
@@ -205,109 +205,5 @@ class RegisterController extends BaseController
     public function registered()
     {
         return view('registered::workflow-registration.registered');
-    }
-
-    /**
-     * User is confirming their desire to register for the site.
-     *
-     * @param  Request $request  [description]
-     * @param  String  $username [description]
-     * @return Redirect          Redirect user to appropriate location.
-     */
-    public function confirm(Request $request, string $username)
-    {
-        $check = $this->didPassSanityCheck($request, $username, false);
-        if (is_bool($check) && $check) {
-            $registration = UserRegistration::token($request->token)->first();
-            $registration->confirmed_on = Carbon::now();
-            $registration->save();
-            return redirect($registration->setPasswordUrl);
-        }
-        return $check;
-    }
-
-    private function didPassSanityCheck(Request $request, string $username, bool $skipConfirmationCheck = true)
-    {
-        $registration = UserRegistration::token($request->token)->first();
-        $usernamesMatch = ($registration->user->username == $username);
-        $unconfirmed = is_null($registration->confirmed_on);
-
-        if ($usernamesMatch && $skipConfirmationCheck) {
-            return true;
-
-        } elseif ($usernamesMatch && $unconfirmed && !$skipConfirmationCheck) {
-            return true;
-
-        } elseif (!$usernamesMatch) {
-            return redirect('/')
-                ->with('message', [
-                    'type' => 'warning',
-                    'title' => 'Incorrect user',
-                    'text' => '<p>The user given is not the one associated with the token. Please try again.</p>'
-                ]);
-
-        } elseif (!$unconfirmed) {
-            return redirect('/login')
-                ->with('message', [
-                    'title' => 'Already confirmed',
-                    'text' => '<p>You have already been confired, please login instead.</p>'
-                ]);
-        }
-        return redirect('/')
-            ->with('message', [
-                    'type' => 'warning',
-                    'title' => 'Unexpected error',
-                    'text' => '<p>Yep, I&rsquo;m just as confused as you are. Please try that again.</p>'
-                ]);
-    }
-
-    /**
-     * Allow user to set their password.
-     *
-     * @param  Request $request  [description]
-     * @param  [type]  $username [description]
-     * @return [type]            [description]
-     */
-    public function showEstablishPasswordForm(Request $request, $username)
-    {
-        $check = $this->didPassSanityCheck($request, $username);
-        if (is_bool($check) && $check) {
-            return view('registered::workflow-registration.establish-password')
-                ->with('message', [
-                    'title' => 'Almost done!',
-                    'text' => '<p>Now all you need to do is tell us what you want your password to be.</p>'
-                ]);
-        }
-        return $check;
-    }
-
-    /**
-     * Set the password for the user.
-     *
-     * @param  Request $request  [description]
-     * @param  [type]  $username [description]
-     * @return [type]            [description]
-     */
-    public function establishPassword(Request $request, $username)
-    {
-        // validate passwords match
-        $this->establishPasswordValidator($request->all())->validate();
-
-        // update user with password
-        $user = UserRegistration::username($username)->first()->user;
-        $user->password = $request->password;
-        $user->save();
-
-        // log user in
-        $this->guard()->login($user);
-        return redirect($user->registration->profilePath);
-    }
-
-    protected function establishPasswordValidator(array $data)
-    {
-        return Validator::make($data, [
-            'password' => 'required',
-            'password_confirm' => 'required|same:password'
-        ]);
     }
 }

@@ -201,10 +201,6 @@ class UserRegistration extends Model
 
     public function getProfilePathAttribute()
     {
-        // TODO: Need to figure out a way to do this generically.
-        if ($this->type->slug == 'owners') {
-            return '/practitioners/'. $this->user->username;
-        }
         return '/'. $this->type->slug .'/'. $this->user->username;
     }
 
@@ -234,7 +230,7 @@ class UserRegistration extends Model
         });
     }
 
-    public function scopeUsername(Builder $query, string $username): Builder
+    public function scopeWithUsername(Builder $query, string $username): Builder
     {
         return $query->whereHas('user', function ($query) use ($username) {
             $query->where('username', $username);
