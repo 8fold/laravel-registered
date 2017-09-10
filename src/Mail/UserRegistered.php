@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Mail;
+namespace Eightfold\RegisteredLaravel\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -29,7 +29,7 @@ class UserRegistered extends Mailable
      * @return $this
      */
     public function build()
-    {            
+    {
         return $this->view('registered::workflow-registration.email-registered');
     }
 }

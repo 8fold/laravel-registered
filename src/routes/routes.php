@@ -4,7 +4,7 @@ Route::group([
         'prefix' => 'invitations',
         'middleware' => ['web', 'auth']
     ], function() {
-    $invitationController = Eightfold\RegistrationManagementLaravel\Controllers\InvitationController::class;
+    $invitationController = Eightfold\RegisteredLaravel\Controllers\InvitationController::class;
 
     Route::get('/', $invitationController.'@index');
     Route::post('/', $invitationController.'@sendInvite');
@@ -14,7 +14,7 @@ Route::group([
 Route::group([
         'middleware' => ['web']
     ], function() {
-    $registerController = Eightfold\RegistrationManagementLaravel\Controllers\RegisterController::class;
+    $registerController = Eightfold\RegisteredLaravel\Controllers\RegisterController::class;
 
     Route::get('register', $registerController.'@showRegistrationForm')
         ->name('register');
@@ -25,7 +25,7 @@ Route::group([
 Route::group([
         'middleware' => ['web']
     ], function() {
-    $loginController = Eightfold\RegistrationManagementLaravel\Controllers\LoginController::class;
+    $loginController = Eightfold\RegisteredLaravel\Controllers\LoginController::class;
 
     // Login
     Route::get('login', $loginController.'@showLoginForm')
@@ -35,13 +35,6 @@ Route::group([
     Route::get('login/patreon', $loginController.'@redirectToProvider');
     Route::get('login/patreon/callback', $loginController.'@handleProviderCallback');
 
-    // Logout
-    Route::post('logout', $loginController.'@logout')
-        ->name('logout');
-    Route::get('logout', function() {
-        return redirect('/');
-    });
-
     Route::get('/forgot-password', $loginController.'@showForgotPasswordForm');
     Route::post('/forgot-password', $loginController.'@processForgotPassword');
 
@@ -49,9 +42,22 @@ Route::group([
     Route::post('/reset-password', $loginController.'@processResetPasswordForm');
 });
 
+Route::group([
+        'prefix' => 'logout'
+    ], function() {
+    $loginController = Eightfold\RegisteredLaravel\Controllers\LoginController::class;
+
+    // Logout
+    Route::post('/', $loginController.'@logout')
+        ->name('logout');
+    Route::get('/', function() {
+        return redirect('/');
+    });
+});
+
 $userTypes = [];
 if (count(config('registered.user_types')) == 0) {
-    $userTypes = Eightfold\RegistrationManagementLaravel\Models\UserType::userTypesForRoutes();
+    $userTypes = Eightfold\RegisteredLaravel\Models\UserType::userTypesForRoutes();
 
 } else {
     $userTypes = config('registered.user_types');
@@ -65,7 +71,7 @@ foreach ($userTypes as $userPrefix) {
         'middleware' => ['web'],
         'prefix' => $prefix
     ], function() {
-        $usersController = Eightfold\RegistrationManagementLaravel\Controllers\UsersController::class;
+        $usersController = Eightfold\RegisteredLaravel\Controllers\UsersController::class;
 
         Route::get('/', $usersController.'@index');
     });
@@ -75,7 +81,7 @@ foreach ($userTypes as $userPrefix) {
         'prefix' => $prefix .'/{username}/account/emails',
         'middleware' => ['web', 'auth', 'registered-only-me']
     ], function() {
-        $emailsController = Eightfold\RegistrationManagementLaravel\Controllers\EmailsController::class;
+        $emailsController = Eightfold\RegisteredLaravel\Controllers\EmailsController::class;
 
         Route::post('/add', $emailsController.'@addEmailAddress');
         Route::post('/primary', $emailsController.'@makePrimary');
@@ -87,7 +93,7 @@ foreach ($userTypes as $userPrefix) {
         'prefix' => $prefix .'/{username}/account',
         'middleware' => ['web', 'auth', 'registered-only-me']
     ], function() {
-        $accountController = Eightfold\RegistrationManagementLaravel\Controllers\AccountController::class;
+        $accountController = Eightfold\RegisteredLaravel\Controllers\AccountController::class;
 
         Route::get('/', $accountController.'@index');
         Route::post('/update-password', $accountController.'@updatePassword');
@@ -100,7 +106,7 @@ foreach ($userTypes as $userPrefix) {
             'prefix' => $prefix .'/{username}',
             'middleware' => ['web']
         ], function() {
-        $profileController = Eightfold\RegistrationManagementLaravel\Controllers\ProfileController::class;
+        $profileController = Eightfold\RegisteredLaravel\Controllers\ProfileController::class;
 
         Route::get('/', $profileController.'@index');
         Route::get('/confirm', $profileController.'@confirm')
@@ -111,12 +117,7 @@ foreach ($userTypes as $userPrefix) {
             ->name('user.establishPassword');
 
         // Editing profile.
-        Route::group([
-                'prefix' => '/edit',
-                'middleware' => ['web', 'registered-only-me']
-            ], function()  use ($profileController) {
-            Route::get('/', $profileController .'@showEditProfile');
-            Route::post('/update-names', $profileController .'@updateProfileInformation');
-        });
+        Route::get('/edit', $profileController .'@showEditProfile');
+        Route::post('/edit/update-names', $profileController .'@updateProfileInformation');
     });
 }

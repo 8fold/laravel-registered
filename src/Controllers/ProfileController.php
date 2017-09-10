@@ -1,17 +1,22 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Controllers;
+namespace Eightfold\RegisteredLaravel\Controllers;
 
-use Eightfold\RegistrationManagementLaravel\Controllers\BaseController;
+use Eightfold\RegisteredLaravel\Controllers\BaseController;
 
 use Auth;
 use Validator;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserRegistration;
+use Illuminate\Foundation\Auth\RegistersUsers;
+
+use Eightfold\RegisteredLaravel\Models\UserRegistration;
 
 class ProfileController extends BaseController
 {
+    use RegistersUsers;
+
     public function index(Request $request, $username)
     {
         $isProfileArea = false;
@@ -21,7 +26,7 @@ class ProfileController extends BaseController
             if(is_active([$trimmedProfilePath, $allSubPaths])) {
                 $isProfileArea = true;
 
-            }         
+            }
         }
         $message = (session('message'))
             ? session('message')
@@ -32,7 +37,7 @@ class ProfileController extends BaseController
             $canEdit = true;
         }
 
-        $user = UserRegistration::username($username)->first()->user;
+        $user = UserRegistration::withUsername($username)->first()->user;
         return view('registered::account-profile.profile')
             ->with('message', $message)
             ->with('user', $user)
@@ -75,5 +80,109 @@ class ProfileController extends BaseController
 
         return redirect($registration->editProfilePath)
             ->with('message', $message);
+    }
+
+    /**
+     * User is confirming their desire to register for the site.
+     *
+     * @param  Request $request  [description]
+     * @param  String  $username [description]
+     * @return Redirect          Redirect user to appropriate location.
+     */
+    public function confirm(Request $request, string $username)
+    {
+        $check = $this->didPassSanityCheck($request, $username, false);
+        if (is_bool($check) && $check) {
+            $registration = UserRegistration::withToken($request->token)->first();
+            $registration->confirmed_on = Carbon::now();
+            $registration->save();
+            return redirect($registration->setPasswordUrl);
+        }
+        return $check;
+    }
+
+    private function didPassSanityCheck(Request $request, string $username, bool $skipConfirmationCheck = true)
+    {
+        $registration = UserRegistration::withToken($request->token)->first();
+        $usernamesMatch = ($registration->user->username == $username);
+        $unconfirmed = is_null($registration->confirmed_on);
+
+        if ($usernamesMatch && $skipConfirmationCheck) {
+            return true;
+
+        } elseif ($usernamesMatch && $unconfirmed && !$skipConfirmationCheck) {
+            return true;
+
+        } elseif (!$usernamesMatch) {
+            return redirect('/')
+                ->with('message', [
+                    'type' => 'warning',
+                    'title' => 'Incorrect user',
+                    'text' => '<p>The user given is not the one associated with the token. Please try again.</p>'
+                ]);
+
+        } elseif (!$unconfirmed) {
+            return redirect('/login')
+                ->with('message', [
+                    'title' => 'Already confirmed',
+                    'text' => '<p>You have already been confired, please login instead.</p>'
+                ]);
+        }
+        return redirect('/')
+            ->with('message', [
+                    'type' => 'warning',
+                    'title' => 'Unexpected error',
+                    'text' => '<p>Yep, I&rsquo;m just as confused as you are. Please try that again.</p>'
+                ]);
+    }
+
+    /**
+     * Allow user to set their password.
+     *
+     * @param  Request $request  [description]
+     * @param  [type]  $username [description]
+     * @return [type]            [description]
+     */
+    public function showEstablishPasswordForm(Request $request, $username)
+    {
+        $check = $this->didPassSanityCheck($request, $username);
+        if (is_bool($check) && $check) {
+            return view('registered::workflow-registration.establish-password')
+                ->with('message', [
+                    'title' => 'Almost done!',
+                    'text' => '<p>Now all you need to do is tell us what you want your password to be.</p>'
+                ]);
+        }
+        return $check;
+    }
+
+    /**
+     * Set the password for the user.
+     *
+     * @param  Request $request  [description]
+     * @param  [type]  $username [description]
+     * @return [type]            [description]
+     */
+    public function establishPassword(Request $request, $username)
+    {
+        // validate passwords match
+        $this->establishPasswordValidator($request->all())->validate();
+
+        // update user with password
+        $user = UserRegistration::withUsername($username)->first()->user;
+        $user->password = $request->password;
+        $user->save();
+
+        // log user in
+        $this->guard()->login($user);
+        return redirect($user->registration->profilePath);
+    }
+
+    protected function establishPasswordValidator(array $data)
+    {
+        return Validator::make($data, [
+            'password' => 'required',
+            'password_confirm' => 'required|same:password'
+        ]);
     }
 }

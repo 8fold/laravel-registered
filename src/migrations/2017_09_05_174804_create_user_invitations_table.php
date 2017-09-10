@@ -12,8 +12,7 @@ class CreateUserInvitationsTable extends Migration
      * @return void
      */
     public function up()
-    {        
-        /** 2.0 */
+    {
         Schema::create('user_invitations', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
@@ -54,7 +53,7 @@ class CreateUserInvitationsTable extends Migration
                 ->references('id')
                 ->on('user_registrations')
                 ->onDelete('cascade')
-                ->unsigned();                 
+                ->unsigned();
         });
     }
 

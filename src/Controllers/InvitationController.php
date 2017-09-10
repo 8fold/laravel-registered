@@ -1,16 +1,16 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Controllers;
+namespace Eightfold\RegisteredLaravel\Controllers;
 
-use Eightfold\RegistrationManagementLaravel\Controllers\BaseController;
+use Eightfold\RegisteredLaravel\Controllers\BaseController;
 
 use Auth;
 use Validator;
 use Illuminate\Http\Request;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserInvitation;
-use Eightfold\RegistrationManagementLaravel\Models\UserType;
-use Eightfold\RegistrationManagementLaravel\Models\UserEmailAddress;
+use Eightfold\RegisteredLaravel\Models\UserInvitation;
+use Eightfold\RegisteredLaravel\Models\UserType;
+use Eightfold\RegisteredLaravel\Models\UserEmailAddress;
 
 class InvitationController extends BaseController
 {
@@ -20,7 +20,7 @@ class InvitationController extends BaseController
         $inviteCountString = '';
         $canInvite = true;
         if ($registration->type->slug == 'owners') {
-            $inviteCountString = 'You can send an unlimited number of invitations.';  
+            $inviteCountString = 'You can send an unlimited number of invitations.';
 
         } else {
             $invitationsMax = 0;
@@ -51,11 +51,11 @@ class InvitationController extends BaseController
 
         $slug = $request->user_type;
         $type = UserType::slug($slug)->first();
-        
+
         $registration = Auth::user()->registration;
 
         UserInvitation::invite($email, $type, $registration);
-        
+
         return redirect('invitations')
             ->with('message', [
                     'type' => 'success',
@@ -76,8 +76,8 @@ class InvitationController extends BaseController
         }
 
         UserInvitation::invite(
-            $invitation->email, 
-            $invitation->type, 
+            $invitation->email,
+            $invitation->type,
             $invitation->senderRegistration);
 
         return redirect('invitations');

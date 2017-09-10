@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Mail;
+namespace Eightfold\RegisteredLaravel\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -28,7 +28,7 @@ class UserResetEmailWarn extends Mailable
      * @return $this
      */
     public function build()
-    {            
+    {
         return $this->view('registered::workflow-forgot.email-reset-warn');
     }
 }

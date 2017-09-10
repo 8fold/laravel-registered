@@ -12,8 +12,7 @@ class CreateUserRegistrationsTable extends Migration
      * @return void
      */
     public function up()
-    {      
-        /** 2.0 */
+    {
         Schema::create('user_registrations', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();

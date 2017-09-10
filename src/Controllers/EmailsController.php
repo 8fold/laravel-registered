@@ -1,14 +1,14 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Controllers;
+namespace Eightfold\RegisteredLaravel\Controllers;
 
-use Eightfold\RegistrationManagementLaravel\Controllers\BaseController;
+use Eightfold\RegisteredLaravel\Controllers\BaseController;
 
 use Auth;
 use Validator;
 use Illuminate\Http\Request;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserEmailAddress;
+use Eightfold\RegisteredLaravel\Models\UserEmailAddress;
 
 class EmailsController extends BaseController
 {

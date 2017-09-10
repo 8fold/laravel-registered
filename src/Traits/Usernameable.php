@@ -1,11 +1,11 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Traits;
+namespace Eightfold\RegisteredLaravel\Traits;
 
 use Validator;
-use Eightfold\RegistrationManagementLaravel\Models\UserRegistration;
+use Eightfold\RegisteredLaravel\Models\UserRegistration;
 
-trait Usernameable 
+trait Usernameable
 {
     public function setUsernameAttribute(string $username): bool
     {
@@ -20,7 +20,7 @@ trait Usernameable
     /**
      *
      * @param  string $username The username of the person you are looking for.
-     * 
+     *
      * @return User
      */
     static public function withUsername(string $username)
@@ -46,5 +46,5 @@ trait Usernameable
     static public function usernameValidation(): string
     {
         return UserRegistration::usernameValidation();
-    }    
+    }
 }

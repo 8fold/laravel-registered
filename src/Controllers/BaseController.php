@@ -1,12 +1,12 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Controllers;
+namespace Eightfold\RegisteredLaravel\Controllers;
 
 use App\Http\Controllers\Controller;
 
 abstract class BaseController extends Controller
 {
-    static private function userModelName()
+    static protected function userModelName()
     {
         return config('auth.providers.users.model');
     }

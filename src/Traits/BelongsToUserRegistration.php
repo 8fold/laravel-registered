@@ -1,10 +1,10 @@
 <?php
-namespace Eightfold\RegistrationManagementLaravel\Traits;
+namespace Eightfold\RegisteredLaravel\Traits;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Eightfold\RegistrationManagementLaravel\Models\UserRegistration;
+use Eightfold\RegisteredLaravel\Models\UserRegistration;
 
-trait BelongsToUserRegistration 
+trait BelongsToUserRegistration
 {
     static protected function belongsToUserRegistrationForeignKey(): string
     {

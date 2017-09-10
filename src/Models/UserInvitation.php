@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Models;
+namespace Eightfold\RegisteredLaravel\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,15 +11,15 @@ use Carbon\Carbon;
 
 use Mail;
 
-use Eightfold\RegistrationManagementLaravel\Mail\UserInvited;
+use Eightfold\RegisteredLaravel\Mail\UserInvited;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserInvitation;
-use Eightfold\RegistrationManagementLaravel\Models\UserRegistration;
-use Eightfold\RegistrationManagementLaravel\Models\UserType;
+use Eightfold\RegisteredLaravel\Models\UserInvitation;
+use Eightfold\RegisteredLaravel\Models\UserRegistration;
+use Eightfold\RegisteredLaravel\Models\UserType;
 
 use Eightfold\TraitsLaravel\PublicKeyable;
-use Eightfold\RegistrationManagementLaravel\Traits\Typeable;
-use Eightfold\RegistrationManagementLaravel\Traits\BelongsToUserRegistration;
+use Eightfold\RegisteredLaravel\Traits\Typeable;
+use Eightfold\RegisteredLaravel\Traits\BelongsToUserRegistration;
 
 class UserInvitation extends Model
 {
@@ -60,7 +60,7 @@ class UserInvitation extends Model
         if (is_null($type)) {
             $type = UserType::find(1);
         }
-        
+
         $invitation = static::email($email)
             ->type($type)
             ->sender($sender)
@@ -107,31 +107,35 @@ class UserInvitation extends Model
     public function senderRegistration(): BelongsTo
     {
         return $this->belongsTo(UserRegistration::class, 'inviter_registration_id');
-    }    
+    }
 
     /** Scopes */
-    public function scopeCode(Builder $query, string $code): Builder
+    public function scopeWithCode(Builder $query, string $code = ''): Builder
     {
         return $query->where('code', $code);
     }
 
-    public function scopeToken(Builder $query, string $token): Builder
+    public function scopeWithToken(Builder $query, string $token = ''): Builder
     {
         return $query->where('token', $token);
     }
 
-    public function scopeEmail(Builder $query, string $email): Builder
+    public function scopeWithEmail(Builder $query, string $email = ''): Builder
     {
         return $query->where('email', $email);
     }
 
-    public function scopeSender(Builder $query, UserRegistration $sender): Builder
+    public function scopeWithSender(Builder $query, UserRegistration $sender = null): Builder
     {
-        return $query->where('inviter_registration_id', $sender->id);
+        return (is_null($sender))
+            ? $query
+            : $query->where('inviter_registration_id', $sender->id);
     }
 
-    public function scopeType(Builder $query, UserType $type): Builder
+    public function scopeWithType(Builder $query, UserType $type = null): Builder
     {
-        return $query->where('user_type_id', $type->id);
+        return (is_null($type))
+            ? $query
+            : $query->where('user_type_id', $type->id);
     }
 }

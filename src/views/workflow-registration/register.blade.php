@@ -1,12 +1,6 @@
 @extends('registered::layouts.app')
 
 @section('content')
-{{-- @if ($invitationRequired) --}}
-{{-- {!! UIKit::alert([
-    'title' => 'Limited release',
-    'text' => '<p>8fold.pro is currently an invitation only site. If you have not received an invitation code, you will not be able to register.</p>'
-]) !!}
-@endif --}}
 <section class="ef-content">
     <form class="ef-width-one-half" role="form" method="POST" action="{{ url('/register') }}">
         {{ csrf_field() }}
@@ -25,7 +19,7 @@
             'placeholder' => 'johnsmith',
             'error' => ($errors->has('username')) ? $errors->first('username') : ''
         ]) !!}
-        @if ($invitationRequired)
+        @if ($invitationRequired && $hasOwner)
             {!! UIKit::textInput([
                 'label' => trans('registered::registration.invitation_code'),
                 'name' => 'invite_code',
