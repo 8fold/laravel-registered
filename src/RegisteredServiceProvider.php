@@ -1,14 +1,14 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel;
+namespace Eightfold\RegisteredLaravel;
 
 use Illuminate\Support\ServiceProvider;
 
 use Illuminate\Support\Facades\Route;
 
-use Eightfold\RegistrationManagementLaravel\Middlewares\RedirectIfNotMe;
+use Eightfold\RegisteredLaravel\Middlewares\RedirectIfNotMe;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserType;
+use Eightfold\RegisteredLaravel\Models\UserType;
 
 class RegisteredServiceProvider extends ServiceProvider
 {
@@ -25,24 +25,24 @@ class RegisteredServiceProvider extends ServiceProvider
             $this->loadTranslationsFrom( __DIR__.'/lang', 'registered');
 
             $this->publishes([
-                __DIR__.'/views/layouts/app.blade.php' 
+                __DIR__.'/views/layouts/app.blade.php'
                     => resource_path('views/vendor/registered/layouts/app.blade.php'),
-                __DIR__.'/views/account-profile/profile.blade.php' 
+                __DIR__.'/views/account-profile/profile.blade.php'
                     => resource_path('views/vendor/registered/account-profile/profile.blade.php'),
-                __DIR__.'/views/account-profile/user-nav.blade.php' 
+                __DIR__.'/views/account-profile/user-nav.blade.php'
                     => resource_path('views/vendor/registered/account-profile/user-nav.blade.php'),
-                __DIR__.'/views/type-homes/' 
+                __DIR__.'/views/type-homes/'
                     => resource_path('views/vendor/registered/type-homes/')
                 ], 'views');
         }
-        
+
         $this->loadMigrationsFrom(__DIR__.'/migrations');
         $this->publishes([
                 __DIR__.'/config/registered.php' => config_path('registered.php'),
             ], 'registered-config');
 
         $router = $this->app['router'];
-        $router->aliasMiddleware('registered-only-me', RedirectIfNotMe::class);        
+        $router->aliasMiddleware('registered-only-me', RedirectIfNotMe::class);
     }
 
     /**

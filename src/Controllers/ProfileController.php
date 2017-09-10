@@ -1,14 +1,14 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Controllers;
+namespace Eightfold\RegisteredLaravel\Controllers;
 
-use Eightfold\RegistrationManagementLaravel\Controllers\BaseController;
+use Eightfold\RegisteredLaravel\Controllers\BaseController;
 
 use Auth;
 use Validator;
 use Illuminate\Http\Request;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserRegistration;
+use Eightfold\RegisteredLaravel\Models\UserRegistration;
 
 class ProfileController extends BaseController
 {
@@ -21,7 +21,7 @@ class ProfileController extends BaseController
             if(is_active([$trimmedProfilePath, $allSubPaths])) {
                 $isProfileArea = true;
 
-            }         
+            }
         }
         $message = (session('message'))
             ? session('message')

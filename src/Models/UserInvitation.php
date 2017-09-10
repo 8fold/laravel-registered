@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Models;
+namespace Eightfold\RegisteredLaravel\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,15 +11,15 @@ use Carbon\Carbon;
 
 use Mail;
 
-use Eightfold\RegistrationManagementLaravel\Mail\UserInvited;
+use Eightfold\RegisteredLaravel\Mail\UserInvited;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserInvitation;
-use Eightfold\RegistrationManagementLaravel\Models\UserRegistration;
-use Eightfold\RegistrationManagementLaravel\Models\UserType;
+use Eightfold\RegisteredLaravel\Models\UserInvitation;
+use Eightfold\RegisteredLaravel\Models\UserRegistration;
+use Eightfold\RegisteredLaravel\Models\UserType;
 
 use Eightfold\TraitsLaravel\PublicKeyable;
-use Eightfold\RegistrationManagementLaravel\Traits\Typeable;
-use Eightfold\RegistrationManagementLaravel\Traits\BelongsToUserRegistration;
+use Eightfold\RegisteredLaravel\Traits\Typeable;
+use Eightfold\RegisteredLaravel\Traits\BelongsToUserRegistration;
 
 class UserInvitation extends Model
 {
@@ -60,7 +60,7 @@ class UserInvitation extends Model
         if (is_null($type)) {
             $type = UserType::find(1);
         }
-        
+
         $invitation = static::email($email)
             ->type($type)
             ->sender($sender)
@@ -107,7 +107,7 @@ class UserInvitation extends Model
     public function senderRegistration(): BelongsTo
     {
         return $this->belongsTo(UserRegistration::class, 'inviter_registration_id');
-    }    
+    }
 
     /** Scopes */
     public function scopeCode(Builder $query, string $code): Builder

@@ -1,13 +1,13 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Models;
+namespace Eightfold\RegisteredLaravel\Models;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
 use Illuminate\Database\Eloquent\Builder;
 
-use Eightfold\RegistrationManagementLaravel\Traits\RegisteredUser;
+use Eightfold\RegisteredLaravel\Traits\RegisteredUser;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Eloquent\Model as Eloquent;
@@ -39,7 +39,7 @@ class UserType extends Authenticatable
                     'display' => $type->display
                 ];
             }
-            return $typeReturn;            
+            return $typeReturn;
         }
         return [];
     }

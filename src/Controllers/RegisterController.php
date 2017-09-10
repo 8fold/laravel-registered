@@ -1,8 +1,8 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Controllers;
+namespace Eightfold\RegisteredLaravel\Controllers;
 
-use Eightfold\RegistrationManagementLaravel\Controllers\BaseController;
+use Eightfold\RegisteredLaravel\Controllers\BaseController;
 
 use Auth;
 use Validator;
@@ -12,12 +12,12 @@ use Carbon\Carbon;
 
 use Illuminate\Foundation\Auth\RegistersUsers;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserInvitation;
-use Eightfold\RegistrationManagementLaravel\Models\UserEmailAddress;
-use Eightfold\RegistrationManagementLaravel\Models\UserRegistration;
-use Eightfold\RegistrationManagementLaravel\Models\UserType;
+use Eightfold\RegisteredLaravel\Models\UserInvitation;
+use Eightfold\RegisteredLaravel\Models\UserEmailAddress;
+use Eightfold\RegisteredLaravel\Models\UserRegistration;
+use Eightfold\RegisteredLaravel\Models\UserType;
 
-use Eightfold\RegistrationManagementLaravel\Classes\PatreonUser;
+use Eightfold\RegisteredLaravel\Classes\PatreonUser;
 
 use Patreon\API;
 use Patreon\OAuth;
@@ -248,14 +248,14 @@ class RegisterController extends BaseController
                 ->with('message', [
                     'title' => 'Already confirmed',
                     'text' => '<p>You have already been confired, please login instead.</p>'
-                ]);            
+                ]);
         }
         return redirect('/')
             ->with('message', [
                     'type' => 'warning',
                     'title' => 'Unexpected error',
                     'text' => '<p>Yep, I&rsquo;m just as confused as you are. Please try that again.</p>'
-                ]);        
+                ]);
     }
 
     /**

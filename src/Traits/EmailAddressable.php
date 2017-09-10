@@ -1,12 +1,12 @@
 <?php
-namespace Eightfold\RegistrationManagementLaravel\Traits;
+namespace Eightfold\RegisteredLaravel\Traits;
 
 use Validator;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserEmailAddress;
-use Eightfold\RegistrationManagementLaravel\Models\UserRegistration;
+use Eightfold\RegisteredLaravel\Models\UserEmailAddress;
+use Eightfold\RegisteredLaravel\Models\UserRegistration;
 
-trait EmailAddressable 
+trait EmailAddressable
 {
     abstract public function emails();
 
@@ -18,7 +18,7 @@ trait EmailAddressable
             }
         }
     }
-    
+
     public function emailWithAddress($email)
     {
         return $this->emails()->where('email', $email)->first();
@@ -70,7 +70,7 @@ trait EmailAddressable
                 $currentDefault->save();
             } elseif ($this->defaultEmailString == $email) {
                 return;
-                
+
             }
         }
         $address = UserEmailAddress::withAddress($email);
@@ -85,5 +85,5 @@ trait EmailAddressable
         $address->is_default = true;
         $address->save();
         return $address;
-    }   
+    }
 }

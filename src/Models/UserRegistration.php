@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Models;
+namespace Eightfold\RegisteredLaravel\Models;
 
 use Auth;
 use Carbon\Carbon;
@@ -8,19 +8,19 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserPasswordReset;
-use Eightfold\RegistrationManagementLaravel\Models\UserInvitation;
-use Eightfold\RegistrationManagementLaravel\Models\UserEmailAddress;
-use Eightfold\RegistrationManagementLaravel\Models\UserType;
+use Eightfold\RegisteredLaravel\Models\UserPasswordReset;
+use Eightfold\RegisteredLaravel\Models\UserInvitation;
+use Eightfold\RegisteredLaravel\Models\UserEmailAddress;
+use Eightfold\RegisteredLaravel\Models\UserType;
 
 use Eightfold\TraitsLaravel\Relationships\BelongsToUser;
 use Eightfold\TraitsLaravel\Tokenizable;
 
-use Eightfold\RegistrationManagementLaravel\Traits\EmailAddressable;
-use Eightfold\RegistrationManagementLaravel\Traits\Typeable;
+use Eightfold\RegisteredLaravel\Traits\EmailAddressable;
+use Eightfold\RegisteredLaravel\Traits\Typeable;
 
 use Mail;
-use Eightfold\RegistrationManagementLaravel\Mail\UserRegistered;
+use Eightfold\RegisteredLaravel\Mail\UserRegistered;
 
 class UserRegistration extends Model
 {
@@ -63,7 +63,7 @@ class UserRegistration extends Model
             if(is_active([$trimmedProfilePath, $allSubPaths])) {
                 $isProfileArea = true;
 
-            }         
+            }
         }
         return $isProfileArea;
     }
@@ -147,7 +147,7 @@ class UserRegistration extends Model
 
     public function getUnclaimedInvitationsAttribute()
     {
-        return $this->sentInvitations()->where('claimed_on', null)->get();    
+        return $this->sentInvitations()->where('claimed_on', null)->get();
     }
 
     public function getClaimedInvitationsAttribute()
@@ -157,7 +157,7 @@ class UserRegistration extends Model
 
     /**
      * Get the invitation sent to the user to register.
-     * 
+     *
      * @return UserInvitation [description]
      */
     public function invitation()
@@ -200,7 +200,7 @@ class UserRegistration extends Model
         }
         return $this->user->username;
     }
-    
+
     public function getConfirmUrlAttribute()
     {
         return $this->profilePath .'/confirm?token='. $this->token;
@@ -231,7 +231,7 @@ class UserRegistration extends Model
             $this->profilePath .'">'.
             $this->displayNameOrUsername .
             '</a>';
-    } 
+    }
 
     public function getEditAccountPathAttribute()
     {
@@ -251,5 +251,5 @@ class UserRegistration extends Model
         return static::whereHas('user', function ($query) use ($username) {
             $query->where('username', $username);
         });
-    }    
+    }
 }

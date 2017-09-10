@@ -1,11 +1,11 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Traits;
+namespace Eightfold\RegisteredLaravel\Traits;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserType;
-use Eightfold\RegistrationManagementLaravel\Models\UserRegistration;
+use Eightfold\RegisteredLaravel\Models\UserType;
+use Eightfold\RegisteredLaravel\Models\UserRegistration;
 
-trait Typeable 
+trait Typeable
 {
     static public function ofTypes($types = [], $strict = false)
     {
@@ -37,19 +37,19 @@ trait Typeable
         $sameAsIds = [];
         foreach ($mainSameAs as $sameAs) {
             if (strlen($sameAs) > 0) {
-                $sameAsIds[] = UserType::where('slug', $sameAs)->first()->id;    
+                $sameAsIds[] = UserType::where('slug', $sameAs)->first()->id;
             }
         }
         $merged = array_merge($mainId, $sameAsIds);
         return $merged;
-    }    
+    }
 
     static public function convertToType($typeable, $typeSlug)
     {
         if ($userType = UserType::where('slug', $typeSlug)->first()) {
             $typeable->user_type_id = $userType->id;
             $typeable->save();
-            return true;            
+            return true;
         }
         return false;
     }
@@ -62,11 +62,11 @@ trait Typeable
     public function userTypeSelectOptions()
     {
         return UserType::selectOptions();
-    } 
+    }
 
-    public function getIsType($type) 
+    public function getIsType($type)
     {
         $t = $this->type;
-        return ($t->slug == $type); 
+        return ($t->slug == $type);
     }
 }

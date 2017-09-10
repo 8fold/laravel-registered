@@ -1,16 +1,16 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Controllers;
+namespace Eightfold\RegisteredLaravel\Controllers;
 
-use Eightfold\RegistrationManagementLaravel\Controllers\BaseController;
+use Eightfold\RegisteredLaravel\Controllers\BaseController;
 
 use View;
 use Auth;
 use Validator;
 use Illuminate\Http\Request;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserRegistration;
-use Eightfold\RegistrationManagementLaravel\Models\UserType;
+use Eightfold\RegisteredLaravel\Models\UserRegistration;
+use Eightfold\RegisteredLaravel\Models\UserType;
 
 class UsersController extends BaseController
 {
@@ -26,7 +26,7 @@ class UsersController extends BaseController
             if ($type == 'users') {
                 $registrations = UserRegistration::all();
             }
-            
+
             // $userType = UserType::where('slug', $type)->first();
             // $registrations = UserRegistration::where('user_type_id', $userType->id);
             // // TODO: Need a different solution. We need a way to set a same as.

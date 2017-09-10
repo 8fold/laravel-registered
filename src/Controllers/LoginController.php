@@ -1,8 +1,8 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Controllers;
+namespace Eightfold\RegisteredLaravel\Controllers;
 
-use Eightfold\RegistrationManagementLaravel\Controllers\BaseController;
+use Eightfold\RegisteredLaravel\Controllers\BaseController;
 
 use Mail;
 use Auth;
@@ -11,16 +11,16 @@ use Illuminate\Http\Request;
 
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
-use Eightfold\RegistrationManagementLaravel\Mail\UserForgotUsernameWarn;
-use Eightfold\RegistrationManagementLaravel\Mail\UserForgotUsername;
-use Eightfold\RegistrationManagementLaravel\Mail\UserResetEmail;
-use Eightfold\RegistrationManagementLaravel\Mail\UserResetEmailWarn;
+use Eightfold\RegisteredLaravel\Mail\UserForgotUsernameWarn;
+use Eightfold\RegisteredLaravel\Mail\UserForgotUsername;
+use Eightfold\RegisteredLaravel\Mail\UserResetEmail;
+use Eightfold\RegisteredLaravel\Mail\UserResetEmailWarn;
 
 use Socialite;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserEmailAddress;
-use Eightfold\RegistrationManagementLaravel\Models\UserPasswordReset;
-use Eightfold\RegistrationManagementLaravel\Models\UserRegistration;
+use Eightfold\RegisteredLaravel\Models\UserEmailAddress;
+use Eightfold\RegisteredLaravel\Models\UserPasswordReset;
+use Eightfold\RegisteredLaravel\Models\UserRegistration;
 
 class LoginController extends BaseController
 {
@@ -71,8 +71,8 @@ class LoginController extends BaseController
 
     public function login(Request $request)
     {
-        $field = filter_var($request->username, FILTER_VALIDATE_EMAIL) 
-            ? 'email' 
+        $field = filter_var($request->username, FILTER_VALIDATE_EMAIL)
+            ? 'email'
             : 'username';
 
         if ($field == 'email' && $email = UserEmailAddress::withAddress($request->username)) {
@@ -100,7 +100,7 @@ class LoginController extends BaseController
     protected function redirectTo()
     {
         return Auth::user()->registration->profilePath;
-    }    
+    }
 
     public function showForgotPasswordForm()
     {
@@ -206,9 +206,9 @@ class LoginController extends BaseController
 
         // Trying other means to sign in the user do not go well.
         $userLoggedIn = Auth::attempt([
-            'username' => $user->username, 
+            'username' => $user->username,
             'password' => $request->new_password
-        ]);        
+        ]);
 
         if ($userLoggedIn) {
             return redirect(Auth::user()->registration->profilePath);

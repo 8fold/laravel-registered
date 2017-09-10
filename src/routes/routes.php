@@ -35,18 +35,24 @@ Route::group([
     Route::get('login/patreon', $loginController.'@redirectToProvider');
     Route::get('login/patreon/callback', $loginController.'@handleProviderCallback');
 
-    // Logout
-    Route::post('logout', $loginController.'@logout')
-        ->name('logout');
-    Route::get('logout', function() {
-        return redirect('/');
-    });
-
     Route::get('/forgot-password', $loginController.'@showForgotPasswordForm');
     Route::post('/forgot-password', $loginController.'@processForgotPassword');
 
     Route::get('/reset-password', $loginController.'@showResetPasswordForm');
     Route::post('/reset-password', $loginController.'@processResetPasswordForm');
+});
+
+Route::group([
+        'prefix' => 'logout'
+    ], function() {
+    $loginController = Eightfold\RegistrationManagementLaravel\Controllers\LoginController::class;
+
+    // Logout
+    Route::post('/', $loginController.'@logout')
+        ->name('logout');
+    Route::get('/', function() {
+        return redirect('/');
+    });
 });
 
 $userTypes = [];
@@ -111,12 +117,7 @@ foreach ($userTypes as $userPrefix) {
             ->name('user.establishPassword');
 
         // Editing profile.
-        Route::group([
-                'prefix' => '/edit',
-                'middleware' => ['web', 'registered-only-me']
-            ], function()  use ($profileController) {
-            Route::get('/', $profileController .'@showEditProfile');
-            Route::post('/update-names', $profileController .'@updateProfileInformation');
-        });
+        Route::get('/edit', $profileController .'@showEditProfile');
+        Route::post('/edit/update-names', $profileController .'@updateProfileInformation');
     });
 }

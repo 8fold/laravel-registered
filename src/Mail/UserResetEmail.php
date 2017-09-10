@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Mail;
+namespace Eightfold\RegisteredLaravel\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
@@ -35,7 +35,7 @@ class UserResetEmail extends Mailable
      * @return $this
      */
     public function build()
-    {            
+    {
         return $this->view('registered::emails.reset');
     }
 }

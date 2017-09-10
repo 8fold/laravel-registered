@@ -1,13 +1,13 @@
 <?php
 
-namespace Eightfold\RegistrationManagementLaravel\Mail;
+namespace Eightfold\RegisteredLaravel\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserInvitation;
+use Eightfold\RegisteredLaravel\Models\UserInvitation;
 
 class UserInvited extends Mailable
 {
@@ -33,7 +33,7 @@ class UserInvited extends Mailable
      * @return $this
      */
     public function build()
-    {            
+    {
         return $this->view('registered::workflow-invitation.email-invitation');
     }
 }
