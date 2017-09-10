@@ -125,13 +125,17 @@ class UserInvitation extends Model
         return $query->where('email', $email);
     }
 
-    public function scopeWithSender(Builder $query, UserRegistration $sender): Builder
+    public function scopeWithSender(Builder $query, UserRegistration $sender = null): Builder
     {
-        return $query->where('inviter_registration_id', $sender->id);
+        return (is_null($sender))
+            ? $query
+            : $query->where('inviter_registration_id', $sender->id);
     }
 
-    public function scopeWithType(Builder $query, UserType $type): Builder
+    public function scopeWithType(Builder $query, UserType $type = null): Builder
     {
-        return $query->where('user_type_id', $type->id);
+        return (is_null($type))
+            ? $query
+            : $query->where('user_type_id', $type->id);
     }
 }
