@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-use Eightfold\RegistrationManagementLaravel\Models\UserType;
+use Eightfold\RegisteredLaravel\Models\UserType;
 
 class CreateUserTypesTable extends Migration
 {
@@ -41,7 +41,7 @@ class CreateUserTypesTable extends Migration
                 'slug' => 'users',
                 'display' => 'Users',
                 'can_delete' => 0
-            ]);        
+            ]);
 
         Schema::table('user_registrations', function (Blueprint $table) {
             $table->integer('user_type_id')
@@ -53,7 +53,7 @@ class CreateUserTypesTable extends Migration
                 ->references('id')
                 ->on('user_types')
                 ->onDelete('cascade')
-                ->unsigned();            
+                ->unsigned();
         });
 
         Schema::table('user_invitations', function (Blueprint $table) {
@@ -66,7 +66,7 @@ class CreateUserTypesTable extends Migration
                 ->references('id')
                 ->on('user_types')
                 ->onDelete('cascade')
-                ->unsigned(); 
+                ->unsigned();
         });
     }
 
