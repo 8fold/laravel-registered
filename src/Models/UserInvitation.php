@@ -110,27 +110,27 @@ class UserInvitation extends Model
     }
 
     /** Scopes */
-    public function scopeCode(Builder $query, string $code): Builder
+    public function scopeWithCode(Builder $query, string $code = ''): Builder
     {
         return $query->where('code', $code);
     }
 
-    public function scopeToken(Builder $query, string $token): Builder
+    public function scopeWithToken(Builder $query, string $token = ''): Builder
     {
         return $query->where('token', $token);
     }
 
-    public function scopeEmail(Builder $query, string $email): Builder
+    public function scopeWithEmail(Builder $query, string $email = ''): Builder
     {
         return $query->where('email', $email);
     }
 
-    public function scopeSender(Builder $query, UserRegistration $sender): Builder
+    public function scopeWithSender(Builder $query, UserRegistration $sender): Builder
     {
         return $query->where('inviter_registration_id', $sender->id);
     }
 
-    public function scopeType(Builder $query, UserType $type): Builder
+    public function scopeWithType(Builder $query, UserType $type): Builder
     {
         return $query->where('user_type_id', $type->id);
     }
