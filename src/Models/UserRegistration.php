@@ -227,7 +227,7 @@ class UserRegistration extends Model
     }
 
     /** Scopes */
-    public function scopeType(Builder $query, string $typeSlug): Builder
+    public function scopeWithType(Builder $query, string $typeSlug): Builder
     {
         return $query->whereHas('type', function ($query) use ($typeSlug) {
             $query->where('slug', $typeSlug);
@@ -236,7 +236,7 @@ class UserRegistration extends Model
 
     public function scopeUsername(Builder $query, string $username): Builder
     {
-        return static::whereHas('user', function ($query) use ($username) {
+        return $query->whereHas('user', function ($query) use ($username) {
             $query->where('username', $username);
         });
     }
