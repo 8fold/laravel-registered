@@ -1,8 +1,8 @@
 {
     "name": "8fold/registered-laravel",
     "description": "Package for Laravel 5.5 to register and authenticate users.",
-    "type": "project",
-    "license": "proprietary",
+    "type": "package",
+    "license": "MIT",
     "authors": [
         {
             "name": "Josh Bruce",
