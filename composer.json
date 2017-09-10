@@ -43,7 +43,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Eightfold\\RegistrationManagementLaravel\\RegisteredServiceProvider"
+                "Eightfold\\RegisteredLaravel\\RegisteredServiceProvider"
             ]
         }
     }
