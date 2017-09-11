@@ -37,7 +37,7 @@ class UserInvitation extends Model
 
     static protected function publicKeySalt(): string
     {
-        return 'Us3rInv!t@t!0n';
+        return config('registered.key_salts.invitation');
     }
 
     static protected function publicKeyPrefix(): string

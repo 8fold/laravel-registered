@@ -40,12 +40,6 @@ Route::group([
 
     Route::get('/reset-password', $loginController.'@showResetPasswordForm');
     Route::post('/reset-password', $loginController.'@processResetPasswordForm');
-});
-
-Route::group([
-        'prefix' => 'logout'
-    ], function() {
-    $loginController = Eightfold\RegisteredLaravel\Controllers\LoginController::class;
 
     // Logout
     Route::post('/', $loginController.'@logout')
