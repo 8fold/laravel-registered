@@ -9,6 +9,7 @@ use Validator;
 use Illuminate\Http\Request;
 
 use Eightfold\RegisteredLaravel\Models\UserInvitation;
+use Eightfold\RegisteredLaravel\Models\UserInvitationRequest;
 use Eightfold\RegisteredLaravel\Models\UserType;
 use Eightfold\RegisteredLaravel\Models\UserEmailAddress;
 
@@ -32,12 +33,14 @@ class InvitationController extends BaseController
 
         }
 
+        $requests = UserInvitationRequest::unsentInvitationRequests();
         $unclaimed = $registration->unclaimedInvitations;
         $claimed = $registration->claimedInvitations;
         $userTypeOptions = UserType::selectOptions();
 
         return view('registered::workflow-invitation.invitations')
             ->with('inviteCountString', $inviteCountString)
+            ->with('requests', $requests)
             ->with('unclaimedInvitations', $unclaimed)
             ->with('claimedInvitations', $claimed)
             ->with('canInvite', $canInvite)
@@ -50,7 +53,7 @@ class InvitationController extends BaseController
         $email = $request->email;
 
         $slug = $request->user_type;
-        $type = UserType::slug($slug)->first();
+        $type = UserType::withSlug($slug)->first();
 
         $registration = Auth::user()->registration;
 

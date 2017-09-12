@@ -20,7 +20,12 @@ class CreateUserRegistrationsTable extends Migration
             $table->dateTime('registered_on')
                 ->comment("Date of when user registered for the site.");
 
-            $table->dateTime('confirmed_on')->nullable()
+            $table->dateTime('tos_accepted_on')
+                ->nullable()
+                ->comment("Date of when user last accepted the TOS.");
+
+            $table->dateTime('confirmed_on')
+                ->nullable()
                 ->comment("When the user confirmed their registration.");
 
             $table->text('token')

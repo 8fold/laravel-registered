@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-{{-- 
+{{--
 
 Highly recommend replacing with @include('layouts.app') or whatever your equivalent is.
 What we're really looking for is a template that has a @yield('content') and a menu
@@ -44,7 +44,7 @@ See other comment below.
     </nav>
 </aside>
     <article class="ef-grid">
-{{--  
+{{--
 
 There are a couple things to call out here.
 
@@ -56,9 +56,15 @@ There are a couple things to call out here.
 --}}
         @if(Registered::isProfileArea())
             @include('registered::account-profile.user-nav')
+            <div class="ef-width-three-fourths ef-end-row">
+            @yield('content')
+            </div>
+
+        @else
+            @yield('content')
+
         @endif
-        @yield('content')
-{{-- 
+{{--
 
 End the parts you care about.
 

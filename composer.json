@@ -28,7 +28,7 @@
         "psr-4": {
             "Eightfold\\UIKit\\": "vendor/8fold/uikit-php/src/",
             "Eightfold\\TraitsLaravel\\": "vendor/8fold/traits-laravel/src/",
-            "Eightfold\\RegisteredLaravel\\": "vendor/8fold/registered-laravel/src/"
+            "Eightfold\\RegisteredLaravel\\": "src/"
         }
     },
     "autoload-dev": {

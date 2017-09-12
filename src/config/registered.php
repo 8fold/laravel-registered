@@ -26,7 +26,7 @@ return [
      * to notify and request users agree to the terms of service again.
      *
      */
-    'tos_url' => '',
+    'tos_url' => env('TOS_URL', ''),
 
     /**
      * Whether to use Registered's front-end capabilities

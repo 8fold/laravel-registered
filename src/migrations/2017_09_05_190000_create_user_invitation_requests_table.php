@@ -16,7 +16,8 @@ class CreateUserInvitationRequestsTable extends Migration
         Schema::create('user_invitation_requests', function (Blueprint $table) {
             $table->increments('id');
             $table->timestamps();
-            $table->string('email');
+            $table->string('email')
+                ->unique();
             $table->integer('user_invitation_id')
                 ->unsigned()
                 ->nullable()

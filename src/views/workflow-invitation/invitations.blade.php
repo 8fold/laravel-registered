@@ -10,7 +10,7 @@
             {{ csrf_field() }}
             {!! UIKit::textInput([
                 'type' => 'email',
-                'label' => trans('members.email_address'),
+                'label' => trans('registered::members.email_address'),
                 'name' => 'email',
                 'placeholder' => 'john@8fold.pro.com',
                 'error' => ($errors->has('email')) ? $errors->first('email') : ''
@@ -22,15 +22,51 @@
                 'options' => $userTypeOptions,
                 'selected' => 'users'
             ]) !!}
+            @else
+            {!! UIKit::hiddenInput([
+                'name' => 'user_type',
+                'value' => 'users'
+            ]) !!}
             @endif
             {!! UIKit::button([
-                'label' => trans('members.invite_member')
+                'label' => trans('registered::members.invite_member')
             ]) !!}
         </form>
         @else
             <p>You have no more invitations available at this time.</p>
         @endif
     </section>
+    @if ($requests->count() > 0)
+    <section class="ef-content">
+        <h2>Invitation requests</h2>
+        @foreach($requests as $request)
+        <form role="form" method="POST" action="{{ Request::url() }}">
+            {{ csrf_field() }}
+            Invite <b>{{ $request->email }}</b> to join.
+            {!! UIKit::hiddenInput([
+                'name' => 'email',
+                'value' => $request->email
+            ]) !!}
+            @if (Auth::user()->canChangeUserTypes)
+            {!! UIKit::select([
+                'label' => 'Select type of user',
+                'name' => 'user_type',
+                'options' => $userTypeOptions,
+                'selected' => 'users'
+            ]) !!}
+            @else
+            {!! UIKit::hiddenInput([
+                'name' => 'user_type',
+                'value' => 'users'
+            ]) !!}
+            @endif
+            {!! UIKit::button([
+                'label' => trans('registered::members.invite_member')
+            ]) !!}
+        </form>
+        @endforeach
+    </section>
+    @endif
     @if ($unclaimedInvitations->count() > 0)
     <section class="ef-content">
         <h2>Pending invitations</h2>

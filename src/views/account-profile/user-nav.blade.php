@@ -10,7 +10,7 @@
                 <li>
                     <a href="{{ env('APP_DOMAIN') }}/invitations">Invite users</a>
                 </li>
-            @endif            
+            @endif
         @endif
         </ul>
     </nav>

@@ -7,6 +7,7 @@ use Eightfold\RegisteredLaravel\Controllers\BaseController;
 use Auth;
 use Validator;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 
 use Carbon\Carbon;
 
@@ -15,6 +16,7 @@ use Illuminate\Foundation\Auth\RegistersUsers;
 use Eightfold\RegisteredLaravel\Models\UserInvitation;
 use Eightfold\RegisteredLaravel\Models\UserEmailAddress;
 use Eightfold\RegisteredLaravel\Models\UserRegistration;
+use Eightfold\RegisteredLaravel\Models\UserInvitationRequest;
 use Eightfold\RegisteredLaravel\Models\UserType;
 
 use Eightfold\RegisteredLaravel\Classes\PatreonUser;
@@ -73,6 +75,9 @@ class RegisterController extends BaseController
 
         $invitationRequired = config('registered.invitations.required');
         $invitationRequestable = config('registered.invitations.requestable');
+        $tosLink = (strlen(config('registered.tos_url')) > 0)
+            ? '<a href="'. env('APP_DOMAIN', '') . config('registered.tos_url') .'">terms of service</a>'
+            : '';
         $token = $request->token;
 
         $hasOwner = (UserRegistration::withType('owners')->count() > 0);
@@ -80,6 +85,7 @@ class RegisterController extends BaseController
             ->with('invitationRequired', $invitationRequired)
             ->with('invitationRequestable', $invitationRequestable)
             ->with('invitationToken', $token)
+            ->with('tosLink', $tosLink)
             ->with('hasOwner', $hasOwner);
         if ($invitationRequired && is_null($token)) {
             return $view
@@ -90,12 +96,25 @@ class RegisterController extends BaseController
 
 
         } elseif ($invitationRequired && !is_null($token)) {
-            $invitation = UserInvitation::withToken($request->token)->first();
-            $email = $invitation->email;
-            return $view->with('email', $email);
+            if ($invitation = UserInvitation::withToken($request->token)->first()) {
+                $email = $invitation->email;
+                return $view->with('email', $email);
 
+            }
         }
         return $view;
+    }
+
+    public function requestInvite(Request $request): RedirectResponse
+    {
+        UserInvitationRequest::validator($request->email)->validate();
+        UserInvitationRequest::create(['email' => $request->email]);
+        return back()
+            ->with('message', [
+                    'type' => 'success',
+                    'title' => 'Request submitted',
+                    'text' => 'Your invitation request has been submitted successfully.'
+                ]);
     }
 
     /**
@@ -107,10 +126,11 @@ class RegisterController extends BaseController
     public function register(Request $request)
     {
         $this->validateRegistration($request);
+
         $invitation = null;
         if (config('registered.invitations.required') && !is_null($request->invitation_token)) {
             $invitation = UserInvitation::withToken($request->invitation_token)
-                ->code($request->invite_code)
+                ->withCode($request->invite_code)
                 ->first();
         }
 
@@ -156,17 +176,7 @@ class RegisterController extends BaseController
         $class = parent::userModelName();
         if ($class::count() > 0) {
             $this->validator($request->all())->validate();
-            $token = $request->invitation_token;
-            $invitation = UserInvitation::token($token)->first();
-            $this->validator($request->all())->validate();
-            if (is_null($invitation)) {
-                return redirect($this->redirectPath())
-                    ->with('message', [
-                        'type' => 'warning',
-                        'title' => 'Invalid invitation',
-                        'text' => '<p>We were unable to find an invitation with that token. Please check the token and try again.</p>'
-                    ]);
-            }
+
         } else {
             $this->validatorDefaultOwner($request->all())->validate();
 
@@ -184,7 +194,12 @@ class RegisterController extends BaseController
         return Validator::make($data, [
             'username' => UserRegistration::usernameValidation(),
             'email' => UserEmailAddress::validation(),
-            'invite_code' => 'required|min:6'
+            'invite_code' => (strlen(config('registered.invitations.required')) > 0)
+                ? 'required|min:6'
+                : '',
+            'tos_acceptance' => (strlen(config('registered.tos_url')) > 0)
+                ? 'required'
+                : ''
         ]);
     }
 
