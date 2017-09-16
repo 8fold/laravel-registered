@@ -22,19 +22,10 @@ class UsersController extends BaseController
                 ? view('registered::type-homes.'. $type .'-home')
                 : view('registered::type-homes.users-home');
 
-            $registrations = UserRegistration::ofTypes([$type]);
+            $registrations = UserRegistration::withType($type)->get();
             if ($type == 'users') {
                 $registrations = UserRegistration::all();
             }
-
-            // $userType = UserType::where('slug', $type)->first();
-            // $registrations = UserRegistration::where('user_type_id', $userType->id);
-            // // TODO: Need a different solution. We need a way to set a same as.
-            // // Owner same as practitioner.
-            // if ($type == 'practitioners') {
-            //     $registrations->orWhere('user_type_id', 1);
-            // }
-            // $registrations = $registrations->get();
 
             return $view->with('registrations', $registrations)
                 ->with('user_type', $type);

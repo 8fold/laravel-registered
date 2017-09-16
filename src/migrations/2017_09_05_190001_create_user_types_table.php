@@ -53,6 +53,18 @@ class CreateUserTypesTable extends Migration
                 ->unsigned();
         });
 
+        Schema::table('user_registrations', function (Blueprint $table) {
+            $table->integer('primary_user_type_id')
+                ->unsigned()
+                ->comment('The primary type of the user.');
+            $table->foreign('primary_user_type_id')
+                ->default(2)
+                ->references('id')
+                ->on('user_types')
+                ->onDelete('cascade')
+                ->unsigned();
+        });
+
         // Pivot
         Schema::create('user_registration_user_type', function (Blueprint $table) {
             $table->integer('user_registration_id')
