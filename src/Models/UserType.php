@@ -2,18 +2,16 @@
 
 namespace Eightfold\RegisteredLaravel\Models;
 
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 
 use Illuminate\Database\Eloquent\Builder;
 
-use Eightfold\RegisteredLaravel\Traits\RegisteredUser;
-
 use Illuminate\Support\Facades\DB;
-use Illuminate\Database\Eloquent\Model as Eloquent;
 use Illuminate\Support\Facades\Schema;
 
-class UserType extends Authenticatable
+use Eightfold\RegisteredLaravel\Models\UserRegistration;
+
+class UserType extends Model
 {
     protected $casts = [
         'can_delete' => 'boolean'
@@ -42,6 +40,11 @@ class UserType extends Authenticatable
             return $typeReturn;
         }
         return [];
+    }
+
+    public function registrations()
+    {
+        return $this->belongsToMany(UserRegistration::class, 'user_registration_id');
     }
 
     /** Scopes */
