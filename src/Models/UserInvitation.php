@@ -14,6 +14,7 @@ use Mail;
 use Eightfold\RegisteredLaravel\Mail\UserInvited;
 
 use Eightfold\RegisteredLaravel\Models\UserInvitation;
+use Eightfold\RegisteredLaravel\Models\UserInvitationRequest;
 use Eightfold\RegisteredLaravel\Models\UserRegistration;
 use Eightfold\RegisteredLaravel\Models\UserType;
 
@@ -37,7 +38,7 @@ class UserInvitation extends Model
 
     static protected function publicKeySalt(): string
     {
-        return 'Us3rInv!t@t!0n';
+        return config('registered.key_salts.invitation');
     }
 
     static protected function publicKeyPrefix(): string
@@ -61,9 +62,9 @@ class UserInvitation extends Model
             $type = UserType::find(1);
         }
 
-        $invitation = static::email($email)
-            ->type($type)
-            ->sender($sender)
+        $invitation = static::withEmail($email)
+            ->withType($type)
+            ->withSender($sender)
             ->first();
         if (is_null($invitation)) {
             $invitation = static::create([
@@ -82,6 +83,12 @@ class UserInvitation extends Model
 
         }
 
+        if ($request = UserInvitationRequest::withEmail($email)->first()) {
+            $request->user_invitation_id = $invitation->id;
+            $request->save();
+
+        }
+
         // TODO: Workflow this.
         if (!\App::runningUnitTests()) {
             Mail::to($invitation->email)->send(new UserInvited($invitation));
@@ -91,9 +98,9 @@ class UserInvitation extends Model
 
     static public function claim($email, $token, $code): UserInvitation
     {
-        $invitation = UserInvitation::email($email)
-            ->token($token)
-            ->code($code)
+        $invitation = UserInvitation::withEmail($email)
+            ->withToken($token)
+            ->withCode($code)
             ->first();
         if (is_null($invitation)) {
             return null;
@@ -107,6 +114,14 @@ class UserInvitation extends Model
     public function senderRegistration(): BelongsTo
     {
         return $this->belongsTo(UserRegistration::class, 'inviter_registration_id');
+    }
+
+    public function submit(UserRegistration $registration): UserInvitation
+    {
+        $invitation = UserInvitation::claim($this->email, $this->token, $this->code);
+        $invitation->user_registration_id = $registration->id;
+        $invitation->save();
+        return $invitation;
     }
 
     /** Scopes */

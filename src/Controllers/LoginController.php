@@ -42,7 +42,7 @@ class LoginController extends BaseController
      *
      * @var string
      */
-    public $redirectTo = '/users/me';
+    // public $redirectTo = '/users/me';
 
     /**
      * Create a new controller instance.

@@ -37,33 +37,15 @@ class EmailsController extends BaseController
     {
         $user = Auth::user();
         $registration = $user->registration;
+        $registration->defaultEmail = $request->address;
+        $registration->save();
 
-        $toChange = $registration->emailWithAddress($request->address);
-        $default = $registration->defaultEmail;
-        if ($toChange->email == $default->email) {
-            $message = [
-                'title' => 'No changes made',
-                'text' => '<p>The default address matched the requested address to change to; therefore, no change was made.</p>'
-            ];
-            return redirect(Auth::user()->registration->editAccountPath)
-                ->with('message', $message);
-        }
-
-        $toChange->is_default = true;
-        $user->email = $toChange->email;
-        $toChange->save();
-        $user->save();
-
-        $default->is_default = false;
-        $default->save();
-
-        $message = [
-            'type' => 'success',
-            'title' => 'Default address changed',
-            'text' => '<p>The default email address for your account was updated.</p>'
-        ];
         return back()
-            ->with('message', $message);
+            ->with('message', [
+                'type' => 'success',
+                'title' => 'Default address changed',
+                'text' => '<p>The default email address for your account was updated.</p>'
+            ]);
     }
 
     public function delete(Request $request)

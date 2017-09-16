@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 use Validator;
 
+use Illuminate\Database\Eloquent\Builder;
+
 use Eightfold\RegisteredLaravel\Traits\BelongsToUserRegistration;
 
 class UserEmailAddress extends Model
@@ -28,7 +30,8 @@ class UserEmailAddress extends Model
 
     static public function withAddress($email)
     {
-        return static::where('email', $email)->first();
+        return static::withAddress($email)->first();
+        // return static::where('email', $email)->first();
     }
 
     static public function validatorPassed($email)
@@ -49,5 +52,16 @@ class UserEmailAddress extends Model
     static public function validation()
     {
         return 'required|email|max:255|unique:user_email_addresses';
+    }
+
+    public function getAddressAttribute()
+    {
+        return $this->email;
+    }
+
+    /** Scopes */
+    public function scopeWithAddress(Builder $query, string $address): Builder
+    {
+        return $query->where('email', $address);
     }
 }

@@ -20,6 +20,7 @@ Route::group([
         ->name('register');
     Route::post('register', $registerController.'@register');
     Route::get('registered', $registerController.'@registered');
+    Route::post('/register/request-invite', $registerController.'@requestInvite');
 });
 
 Route::group([
@@ -40,29 +41,16 @@ Route::group([
 
     Route::get('/reset-password', $loginController.'@showResetPasswordForm');
     Route::post('/reset-password', $loginController.'@processResetPasswordForm');
-});
-
-Route::group([
-        'prefix' => 'logout'
-    ], function() {
-    $loginController = Eightfold\RegisteredLaravel\Controllers\LoginController::class;
 
     // Logout
-    Route::post('/', $loginController.'@logout')
+    Route::post('/logout', $loginController.'@logout')
         ->name('logout');
-    Route::get('/', function() {
+    Route::get('/logout', function() {
         return redirect('/');
     });
 });
 
-$userTypes = [];
-if (count(config('registered.user_types')) == 0) {
-    $userTypes = Eightfold\RegisteredLaravel\Models\UserType::userTypesForRoutes();
-
-} else {
-    $userTypes = config('registered.user_types');
-
-}
+$userTypes = Eightfold\RegisteredLaravel\Models\UserType::userTypesForRoutes();
 foreach ($userTypes as $userPrefix) {
     $prefix = $userPrefix['slug'];
 

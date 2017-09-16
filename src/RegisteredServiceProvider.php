@@ -22,11 +22,14 @@ class RegisteredServiceProvider extends ServiceProvider
         $useViews = !config('registered.headless.views');
         if ($useViews) {
             $this->loadViewsFrom(__DIR__.'/views', 'registered');
-            $this->loadTranslationsFrom( __DIR__.'/lang', 'registered');
+            $this->loadTranslationsFrom(__DIR__.'/lang', 'registered');
 
             $this->publishes([
+                __DIR__.'/lang' => resource_path('lang/vendor/registered'),
                 __DIR__.'/views/layouts/app.blade.php'
                     => resource_path('views/vendor/registered/layouts/app.blade.php'),
+                __DIR__.'/views/workflow-registration/part-invitation-alert.blade.php'
+                    => resource_path('views/vendor/registered/workflow-registration/part-invitation-alert.blade.php'),
                 __DIR__.'/views/account-profile/profile.blade.php'
                     => resource_path('views/vendor/registered/account-profile/profile.blade.php'),
                 __DIR__.'/views/account-profile/user-nav.blade.php'

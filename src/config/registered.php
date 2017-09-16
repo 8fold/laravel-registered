@@ -8,9 +8,9 @@ return [
      * - **required:** Whether an invitation is required for registration.
      * - **requestable:** Whether users can request an invitation be sent to them.
      *
-     * Note: For open enrollment, set required to false; it does not matter if 
+     * Note: For open enrollment, set required to false; it does not matter if
      * requestable is true or false at that point.
-     * 
+     *
      */
     'invitations' => [
         'required' => true,
@@ -24,16 +24,16 @@ return [
      * registration form. Further, it will need to be checked in order to complete
      * the registration process. Finally, you will be able to mark your TOS as updated
      * to notify and request users agree to the terms of service again.
-     * 
+     *
      */
-    'tos_url' => '',
+    'tos_url' => env('TOS_URL', ''),
 
     /**
      * Whether to use Registered's front-end capabilities
      *
      * The term "headless" is being misused slightly here.
      *
-     * - **views:** Whether to load and publish Registered's views. If set to true, 
+     * - **views:** Whether to load and publish Registered's views. If set to true,
      *              routes will not be registered either.
      * - **routes:** Whether to register the routes for the package. If set to true,
      *               the views will be available to you, as well as the controllers;
@@ -42,5 +42,11 @@ return [
     'headless' => [
         'views' => false,
         'routes' => false
-    ]
+    ],
+
+    'key_salts' => [
+        'invitation' => 'Us3rInv!t@t!0n'
+    ],
+
+    'delegates' => []
 ];
