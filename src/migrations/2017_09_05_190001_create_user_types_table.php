@@ -99,15 +99,16 @@ class CreateUserTypesTable extends Migration
             $table->dropColumn('user_type_id');
         });
 
-        Schema::table('user_registration_user_type', function(Blueprint $table) {
-            $table->dropForeign(['user_type_id']);
-            $table->dropColumn('user_type_id');
-
-            $table->dropForeign(['user_registration_id']);
-            $table->dropColumn('user_registration_id');
+        Schema::table('user_registrations', function(Blueprint $table) {
+            $table->dropForeign(['primary_user_type_id']);
+            $table->dropColumn('primary_user_type_id');
         });
 
-        Schema::dropIfExists('user_types');
+        Schema::table('user_registration_user_type', function(Blueprint $table) {
+            $table->dropForeign(['user_type_id']);
+            $table->dropForeign(['user_registration_id']);
+        });
         Schema::dropIfExists('user_registration_user_type');
+        Schema::dropIfExists('user_types');
     }
 }
