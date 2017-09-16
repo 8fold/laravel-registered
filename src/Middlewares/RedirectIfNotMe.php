@@ -27,8 +27,8 @@ class RedirectIfNotMe
             return redirect($target)
                 ->with('message', [
                     'type' => 'warning',
-                    'title' => 'Not allowed',
-                    'text' => 'You are not allowed to view this page or perform this action.'
+                    'title' => 'Not authorized',
+                    'text' => 'You are not authorized for this area or action.'
                 ]);
         }
 

@@ -46,5 +46,7 @@ return [
 
     'key_salts' => [
         'invitation' => 'Us3rInv!t@t!0n'
-    ]
+    ],
+
+    'delegates' => []
 ];
