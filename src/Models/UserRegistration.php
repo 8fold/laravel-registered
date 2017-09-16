@@ -30,7 +30,7 @@ class UserRegistration extends Model
         Typeable;
 
     protected $fillable = [
-        'token', 'user_id', 'registered_on', 'tos_accepted_on', 'user_type_id'
+        'token', 'user_id', 'registered_on', 'user_type_id'
     ];
 
     protected $hidden = [
@@ -83,7 +83,7 @@ class UserRegistration extends Model
         }
 
         // Claim the invitatioin or bail.
-        if (static::invitationRequired() && is_null($invitation->submt())) {
+        if (static::invitationRequired() && is_null(UserInvitation::claim($email, $invitation->token, $invitation->code))) {
             return null;
         }
 
@@ -99,15 +99,15 @@ class UserRegistration extends Model
             'token' => self::generateToken(36),
             'user_id' => $user->id,
             'user_type_id' => $type->id,
-            'registered_on' => Carbon::now(),
-            'tos_accepted_on' => Carbon::now()
+            'registered_on' => Carbon::now()
         ]);
         $registration->addEmail($email, true);
         $registration->save();
 
         // Link invitation to registration.
         if (!is_null($invitation)) {
-            $invitation->submit($registration);
+            $invitation->user_registration_id = $registration->id;
+            $invitation->save();
         }
 
         // Email new user to establish password.
@@ -169,9 +169,9 @@ class UserRegistration extends Model
         return $this->hasMany(UserEmailAddress::class, 'user_registration_id');
     }
 
-    public function type()
+    public function types()
     {
-        return $this->belongsTo(UserType::class, 'user_type_id');
+        return $this->belongsToMany(UserType::class, 'user_type_id');
     }
 
     public function getDisplayNameAttribute()

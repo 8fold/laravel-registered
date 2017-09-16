@@ -22,39 +22,23 @@ class CreateUserTypesTable extends Migration
             $table->string('display');
             $table->string('visible_to')
                 ->default('all');
-            $table->string('same_as')
-                ->nullable();
-            $table->integer('order')
-                ->default(0);
             $table->boolean('can_delete')
                 ->default(true);
         });
 
-        UserType::create([
+        $type = UserType::create([
                 'slug' => 'owners',
-                'display' => 'Owners',
-                'can_delete' => 0,
-                'visible_to' => 'owners'
+                'display' => 'Owners'
             ]);
+        $type->can_delete = false;
+        $type->save();
 
-        UserType::create([
+        $type = UserType::create([
                 'slug' => 'users',
-                'display' => 'Users',
-                'can_delete' => 0
+                'display' => 'Users'
             ]);
-
-        Schema::table('user_registrations', function (Blueprint $table) {
-            $table->integer('user_type_id')
-                ->default(2)
-                ->unsigned()
-                ->nullable()
-                ->comment('The registration for the invited user.');
-            $table->foreign('user_type_id')
-                ->references('id')
-                ->on('user_types')
-                ->onDelete('cascade')
-                ->unsigned();
-        });
+        $type->can_delete = false;
+        $type->save();
 
         Schema::table('user_invitations', function (Blueprint $table) {
             $table->integer('user_type_id')
@@ -63,6 +47,27 @@ class CreateUserTypesTable extends Migration
                 ->comment('The registration for the invited user.');
             $table->foreign('user_type_id')
                 ->default(2)
+                ->references('id')
+                ->on('user_types')
+                ->onDelete('cascade')
+                ->unsigned();
+        });
+
+        // Pivot
+        Schema::create('user_registration_user_type', function (Blueprint $table) {
+            $table->integer('user_registration_id')
+                ->unsigned()
+                ->comment('The registration for the user.');
+            $table->foreign('user_registration_id')
+                ->references('id')
+                ->on('user_registrations')
+                ->onDelete('cascade')
+                ->unsigned();
+
+            $table->integer('user_type_id')
+                ->unsigned()
+                ->comment('The user type for the registration.');
+            $table->foreign('user_type_id')
                 ->references('id')
                 ->on('user_types')
                 ->onDelete('cascade')
@@ -77,15 +82,20 @@ class CreateUserTypesTable extends Migration
      */
     public function down()
     {
-        Schema::table('user_registrations', function(Blueprint $table) {
-            $table->dropForeign(['user_type_id']);
-            $table->dropColumn('user_type_id');
-        });
-
         Schema::table('user_invitations', function(Blueprint $table) {
             $table->dropForeign(['user_type_id']);
             $table->dropColumn('user_type_id');
         });
+
+        Schema::table('user_registration_user_type', function(Blueprint $table) {
+            $table->dropForeign(['user_type_id']);
+            $table->dropColumn('user_type_id');
+
+            $table->dropForeign(['user_registration_id']);
+            $table->dropColumn('user_registration_id');
+        });
+
         Schema::dropIfExists('user_types');
+        Schema::dropIfExists('user_registration_user_type');
     }
 }
