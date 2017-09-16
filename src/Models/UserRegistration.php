@@ -22,6 +22,10 @@ use Eightfold\RegisteredLaravel\Traits\Typeable;
 use Mail;
 use Eightfold\RegisteredLaravel\Mail\UserRegistered;
 
+/**
+ * @todo Batch set user type
+ * @todo Make sure changing user types can update the primary user type
+ */
 class UserRegistration extends Model
 {
     use BelongsToUser,
@@ -169,9 +173,14 @@ class UserRegistration extends Model
         return $this->hasMany(UserEmailAddress::class, 'user_registration_id');
     }
 
+    public function type()
+    {
+        return $this->belongsTo(UserType::class, 'primary_user_type_id');
+    }
+
     public function types()
     {
-        return $this->belongsToMany(UserType::class, 'user_type_id');
+        return $this->belongsToMany(UserType::class);
     }
 
     public function getDisplayNameAttribute()
@@ -225,7 +234,7 @@ class UserRegistration extends Model
     /** Scopes */
     public function scopeWithType(Builder $query, string $typeSlug): Builder
     {
-        return $query->whereHas('type', function ($query) use ($typeSlug) {
+        return $query->whereHas('types', function ($query) use ($typeSlug) {
             $query->where('slug', $typeSlug);
         });
     }

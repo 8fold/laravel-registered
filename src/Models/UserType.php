@@ -44,7 +44,7 @@ class UserType extends Model
 
     public function registrations()
     {
-        return $this->belongsToMany(UserRegistration::class, 'user_registration_id');
+        return $this->belongsToMany(UserRegistration::class);
     }
 
     /** Scopes */

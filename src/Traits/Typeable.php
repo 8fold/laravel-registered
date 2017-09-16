@@ -5,6 +5,12 @@ namespace Eightfold\RegisteredLaravel\Traits;
 use Eightfold\RegisteredLaravel\Models\UserType;
 use Eightfold\RegisteredLaravel\Models\UserRegistration;
 
+/**
+ * @deprecated
+ *
+ * @todo verify these methods are not longer necessary
+ *
+ */
 trait Typeable
 {
     static public function ofTypes($types = [], $strict = false)
