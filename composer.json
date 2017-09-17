@@ -1,5 +1,5 @@
 {
-    "name": "8fold/registered-laravel",
+    "name": "8fold/laravel-registered",
     "description": "Package for Laravel 5.5 to invite, register, and authenticate users.",
     "type": "package",
     "license": "MIT",
@@ -27,8 +27,8 @@
     "autoload": {
         "psr-4": {
             "Eightfold\\UIKit\\": "vendor/8fold/uikit-php/src/",
-            "Eightfold\\TraitsLaravel\\": "vendor/8fold/traits-laravel/src/",
-            "Eightfold\\RegisteredLaravel\\": "src/"
+            "Eightfold\\LaravelTraits\\": "vendor/8fold/traits-laravel/src/",
+            "Eightfold\\LaravelRegistered\\": "src/"
         }
     },
     "autoload-dev": {
