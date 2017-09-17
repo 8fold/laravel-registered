@@ -75,7 +75,7 @@ class LoginController extends BaseController
             ? 'email'
             : 'username';
 
-        if ($field == 'email' && $email = UserEmailAddress::withAddress($request->username)) {
+        if ($field == 'email' && $email = UserEmailAddress::withAddress($request->username)->first()) {
             $registration = $email->registration;
             $user = $registration->user;
             $username = $user->username;

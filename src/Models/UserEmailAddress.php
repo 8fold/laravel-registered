@@ -28,12 +28,6 @@ class UserEmailAddress extends Model
         'email', 'is_default', 'user_registration_id'
     ];
 
-    static public function withAddress($email)
-    {
-        return static::withAddress($email)->first();
-        // return static::where('email', $email)->first();
-    }
-
     static public function validatorPassed($email)
     {
         if (static::validator($email)->fails()) {
