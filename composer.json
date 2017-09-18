@@ -27,8 +27,8 @@
     "autoload": {
         "psr-4": {
             "Eightfold\\UIKit\\": "vendor/8fold/uikit-php/src/",
-            "Eightfold\\LaravelTraits\\": "vendor/8fold/traits-laravel/src/",
-            "Eightfold\\LaravelRegistered\\": "src/"
+            "Eightfold\\Traits\\": "vendor/8fold/traits-laravel/src/",
+            "Eightfold\\Registered\\": "src/"
         }
     },
     "autoload-dev": {
@@ -40,13 +40,6 @@
         "preferred-install": "dist",
         "platform": {
             "php": "7.0.12"
-        }
-    },
-    "extra": {
-        "laravel": {
-            "providers": [
-                "Eightfold\\RegisteredLaravel\\RegisteredServiceProvider"
-            ]
         }
     }
 }
