@@ -54,6 +54,11 @@ class UserEmailAddress extends Model
     }
 
     /** Scopes */
+    public function scopeIsDefault(Builder $query, bool $default = true): Builder
+    {
+        return $query->where('is_default', $default);
+    }
+
     public function scopeWithAddress(Builder $query, string $address): Builder
     {
         return $query->where('email', $address);

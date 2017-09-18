@@ -18,7 +18,7 @@ use Eightfold\Registered\Models\UserInvitationRequest;
 use Eightfold\Registered\Models\UserRegistration;
 use Eightfold\Registered\Models\UserType;
 
-use Eightfold\TraitsLaravel\PublicKeyable;
+use Eightfold\Traits\PublicKeyable;
 use Eightfold\Registered\Traits\Typeable;
 use Eightfold\Registered\Traits\BelongsToUserRegistration;
 
@@ -30,6 +30,10 @@ class UserInvitation extends Model
 
     protected $fillable = [
         'email', 'type', 'token', 'code', 'inviter_registration_id', 'user_type_id'
+    ];
+
+    protected $dates = [
+        'claimed_on'
     ];
 
     protected $hidden = [
@@ -111,6 +115,11 @@ class UserInvitation extends Model
         return $invitation;
     }
 
+    public function registration(): BelongsTo
+    {
+        return $this->belongsTo(UserRegistration::class, 'user_registration_id');
+    }
+
     public function senderRegistration(): BelongsTo
     {
         return $this->belongsTo(UserRegistration::class, 'inviter_registration_id');
@@ -122,6 +131,11 @@ class UserInvitation extends Model
         $invitation->user_registration_id = $registration->id;
         $invitation->save();
         return $invitation;
+    }
+
+    public function getIsClaimedAttribute()
+    {
+        return (!is_null($this->claimed_on) || !is_null($this->registration));
     }
 
     /** Scopes */
