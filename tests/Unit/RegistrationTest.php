@@ -1,13 +1,14 @@
 <?php
 
-namespace Tests\Unit;
+namespace Eightfold\Registered\Tests\Unit;
 
-use Tests\TestCase;
+use Eightfold\Registered\Tests\TestCase;
+
 use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use Eightfold\RegistrationManagementLaravel\Models\User;
-use Eightfold\RegistrationManagementLaravel\Models\UserInvitation;
-use Eightfold\RegistrationManagementLaravel\Models\UserRegistration;
+use Eightfold\Registered\Models\User;
+use Eightfold\Registered\Models\UserInvitation;
+use Eightfold\Registered\Models\UserRegistration;
 
 class RegistrationTest extends TestCase
 {
@@ -21,8 +22,8 @@ class RegistrationTest extends TestCase
     public function registerUser()
     {
         $invitation = $this->inviteUser();
-        return UserRegistration::registerUser('someone', 'someone@example.com', 'user', $invitation->token, $invitation->code);        
-    } 
+        return UserRegistration::registerUser('someone', 'someone@example.com', 'user', $invitation->token, $invitation->code);
+    }
 
     public function testRegistrationConfirmUrl()
     {

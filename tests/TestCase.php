@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Eightfold\Registered\Tests;
 
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
 

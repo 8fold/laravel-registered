@@ -1,12 +1,12 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Models;
+namespace Eightfold\Registered\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 use Eightfold\TraitsLaravel\Tokenizable;
 
-use Eightfold\RegisteredLaravel\Traits\BelongsToUserRegistration;
+use Eightfold\Registered\Traits\BelongsToUserRegistration;
 
 class UserPasswordReset extends Model
 {

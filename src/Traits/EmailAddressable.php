@@ -1,10 +1,10 @@
 <?php
-namespace Eightfold\RegisteredLaravel\Traits;
+namespace Eightfold\Registered\Traits;
 
 use Validator;
 
-use Eightfold\RegisteredLaravel\Models\UserEmailAddress;
-use Eightfold\RegisteredLaravel\Models\UserRegistration;
+use Eightfold\Registered\Models\UserEmailAddress;
+use Eightfold\Registered\Models\UserRegistration;
 
 trait EmailAddressable
 {

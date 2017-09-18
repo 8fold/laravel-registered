@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Traits;
+namespace Eightfold\Registered\Traits;
 
 trait RegisteredUserCapabilities
 {

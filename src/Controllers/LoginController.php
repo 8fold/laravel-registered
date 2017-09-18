@@ -1,8 +1,8 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Controllers;
+namespace Eightfold\Registered\Controllers;
 
-use Eightfold\RegisteredLaravel\Controllers\BaseController;
+use Eightfold\Registered\Controllers\BaseController;
 
 use Mail;
 use Auth;
@@ -11,16 +11,16 @@ use Illuminate\Http\Request;
 
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
-use Eightfold\RegisteredLaravel\Mail\UserForgotUsernameWarn;
-use Eightfold\RegisteredLaravel\Mail\UserForgotUsername;
-use Eightfold\RegisteredLaravel\Mail\UserResetEmail;
-use Eightfold\RegisteredLaravel\Mail\UserResetEmailWarn;
+use Eightfold\Registered\Mail\UserForgotUsernameWarn;
+use Eightfold\Registered\Mail\UserForgotUsername;
+use Eightfold\Registered\Mail\UserResetEmail;
+use Eightfold\Registered\Mail\UserResetEmailWarn;
 
 use Socialite;
 
-use Eightfold\RegisteredLaravel\Models\UserEmailAddress;
-use Eightfold\RegisteredLaravel\Models\UserPasswordReset;
-use Eightfold\RegisteredLaravel\Models\UserRegistration;
+use Eightfold\Registered\Models\UserEmailAddress;
+use Eightfold\Registered\Models\UserPasswordReset;
+use Eightfold\Registered\Models\UserRegistration;
 
 class LoginController extends BaseController
 {

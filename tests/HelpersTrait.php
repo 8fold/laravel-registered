@@ -1,10 +1,10 @@
 <?php
 
-namespace Tests;
+namespace Eightfold\Registered\Tests;
 
-use Eightfold\RegistrationManagementLaravel\Models\User;
-use Eightfold\RegistrationManagementLaravel\Models\UserInvitation;
-use Eightfold\RegistrationManagementLaravel\Models\Registration;
+use Eightfold\Registered\Models\User;
+use Eightfold\Registered\Models\UserInvitation;
+use Eightfold\Registered\Models\Registration;
 
 trait HelpersTrait
 {
@@ -16,6 +16,6 @@ trait HelpersTrait
     public function registerUser()
     {
         $invitation = $this->inviteUser();
-        return UserRegistration::registerUser('someone', 'someone@example.com', 'user', $invitation->token, $invitation->code);        
-    } 
+        return UserRegistration::registerUser('someone', 'someone@example.com', 'user', $invitation->token, $invitation->code);
+    }
 }

@@ -1,13 +1,13 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Mail;
+namespace Eightfold\Registered\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-use Eightfold\RegisteredLaravel\Models\UserInvitation;
+use Eightfold\Registered\Models\UserInvitation;
 
 class UserInvited extends Mailable
 {

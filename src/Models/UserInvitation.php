@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Models;
+namespace Eightfold\Registered\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
@@ -11,16 +11,16 @@ use Carbon\Carbon;
 
 use Mail;
 
-use Eightfold\RegisteredLaravel\Mail\UserInvited;
+use Eightfold\Registered\Mail\UserInvited;
 
-use Eightfold\RegisteredLaravel\Models\UserInvitation;
-use Eightfold\RegisteredLaravel\Models\UserInvitationRequest;
-use Eightfold\RegisteredLaravel\Models\UserRegistration;
-use Eightfold\RegisteredLaravel\Models\UserType;
+use Eightfold\Registered\Models\UserInvitation;
+use Eightfold\Registered\Models\UserInvitationRequest;
+use Eightfold\Registered\Models\UserRegistration;
+use Eightfold\Registered\Models\UserType;
 
 use Eightfold\TraitsLaravel\PublicKeyable;
-use Eightfold\RegisteredLaravel\Traits\Typeable;
-use Eightfold\RegisteredLaravel\Traits\BelongsToUserRegistration;
+use Eightfold\Registered\Traits\Typeable;
+use Eightfold\Registered\Traits\BelongsToUserRegistration;
 
 class UserInvitation extends Model
 {

@@ -1,8 +1,8 @@
 <?php
-namespace Eightfold\RegisteredLaravel\Traits;
+namespace Eightfold\Registered\Traits;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Eightfold\RegisteredLaravel\Models\UserRegistration;
+use Eightfold\Registered\Models\UserRegistration;
 
 trait BelongsToUserRegistration
 {

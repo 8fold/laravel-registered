@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-use Eightfold\RegisteredLaravel\Models\UserType;
+use Eightfold\Registered\Models\UserType;
 
 class CreateUserTypesTable extends Migration
 {
