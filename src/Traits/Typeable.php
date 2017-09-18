@@ -1,9 +1,9 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Traits;
+namespace Eightfold\Registered\Traits;
 
-use Eightfold\RegisteredLaravel\Models\UserType;
-use Eightfold\RegisteredLaravel\Models\UserRegistration;
+use Eightfold\Registered\Models\UserType;
+use Eightfold\Registered\Models\UserRegistration;
 
 /**
  * @deprecated

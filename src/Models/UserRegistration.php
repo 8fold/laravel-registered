@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Models;
+namespace Eightfold\Registered\Models;
 
 use Auth;
 use Carbon\Carbon;
@@ -8,19 +8,19 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
-use Eightfold\RegisteredLaravel\Models\UserPasswordReset;
-use Eightfold\RegisteredLaravel\Models\UserInvitation;
-use Eightfold\RegisteredLaravel\Models\UserEmailAddress;
-use Eightfold\RegisteredLaravel\Models\UserType;
+use Eightfold\Registered\Models\UserPasswordReset;
+use Eightfold\Registered\Models\UserInvitation;
+use Eightfold\Registered\Models\UserEmailAddress;
+use Eightfold\Registered\Models\UserType;
 
 use Eightfold\TraitsLaravel\Relationships\BelongsToUser;
 use Eightfold\TraitsLaravel\Tokenizable;
 
-use Eightfold\RegisteredLaravel\Traits\EmailAddressable;
-use Eightfold\RegisteredLaravel\Traits\Typeable;
+use Eightfold\Registered\Traits\EmailAddressable;
+use Eightfold\Registered\Traits\Typeable;
 
 use Mail;
-use Eightfold\RegisteredLaravel\Mail\UserRegistered;
+use Eightfold\Registered\Mail\UserRegistered;
 
 /**
  * @todo Batch set user type

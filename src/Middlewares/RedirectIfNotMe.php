@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Middlewares;
+namespace Eightfold\Registered\Middlewares;
 
 use Closure;
 use Auth;

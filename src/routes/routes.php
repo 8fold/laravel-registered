@@ -4,7 +4,7 @@ Route::group([
         'prefix' => 'invitations',
         'middleware' => ['web', 'auth']
     ], function() {
-    $invitationController = Eightfold\RegisteredLaravel\Controllers\InvitationController::class;
+    $invitationController = Eightfold\Registered\Controllers\InvitationController::class;
 
     Route::get('/', $invitationController.'@index');
     Route::post('/', $invitationController.'@sendInvite');
@@ -14,7 +14,7 @@ Route::group([
 Route::group([
         'middleware' => ['web']
     ], function() {
-    $registerController = Eightfold\RegisteredLaravel\Controllers\RegisterController::class;
+    $registerController = Eightfold\Registered\Controllers\RegisterController::class;
 
     Route::get('register', $registerController.'@showRegistrationForm')
         ->name('register');
@@ -26,7 +26,7 @@ Route::group([
 Route::group([
         'middleware' => ['web']
     ], function() {
-    $loginController = Eightfold\RegisteredLaravel\Controllers\LoginController::class;
+    $loginController = Eightfold\Registered\Controllers\LoginController::class;
 
     // Login
     Route::get('login', $loginController.'@showLoginForm')
@@ -50,7 +50,7 @@ Route::group([
     });
 });
 
-$userTypes = Eightfold\RegisteredLaravel\Models\UserType::userTypesForRoutes();
+$userTypes = Eightfold\Registered\Models\UserType::userTypesForRoutes();
 foreach ($userTypes as $userPrefix) {
     $prefix = $userPrefix['slug'];
 
@@ -59,7 +59,7 @@ foreach ($userTypes as $userPrefix) {
         'middleware' => ['web'],
         'prefix' => $prefix
     ], function() {
-        $usersController = Eightfold\RegisteredLaravel\Controllers\UsersController::class;
+        $usersController = Eightfold\Registered\Controllers\UsersController::class;
 
         Route::get('/', $usersController.'@index');
     });
@@ -69,7 +69,7 @@ foreach ($userTypes as $userPrefix) {
         'prefix' => $prefix .'/{username}/account/emails',
         'middleware' => ['web', 'auth', 'registered-only-me']
     ], function() {
-        $emailsController = Eightfold\RegisteredLaravel\Controllers\EmailsController::class;
+        $emailsController = Eightfold\Registered\Controllers\EmailsController::class;
 
         Route::post('/add', $emailsController.'@addEmailAddress');
         Route::post('/primary', $emailsController.'@makePrimary');
@@ -81,7 +81,7 @@ foreach ($userTypes as $userPrefix) {
         'prefix' => $prefix .'/{username}/account',
         'middleware' => ['web', 'auth', 'registered-only-me']
     ], function() {
-        $accountController = Eightfold\RegisteredLaravel\Controllers\AccountController::class;
+        $accountController = Eightfold\Registered\Controllers\AccountController::class;
 
         Route::get('/', $accountController.'@index');
         Route::post('/update-password', $accountController.'@updatePassword');
@@ -94,7 +94,7 @@ foreach ($userTypes as $userPrefix) {
             'prefix' => $prefix .'/{username}',
             'middleware' => ['web']
         ], function() {
-        $profileController = Eightfold\RegisteredLaravel\Controllers\ProfileController::class;
+        $profileController = Eightfold\Registered\Controllers\ProfileController::class;
 
         Route::get('/', $profileController.'@index');
         Route::get('/confirm', $profileController.'@confirm')

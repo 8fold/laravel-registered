@@ -1,13 +1,13 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Traits;
+namespace Eightfold\Registered\Traits;
 
 use Hash;
 use Validator;
 
-use Eightfold\RegisteredLaravel\Models\UserRegistration;
+use Eightfold\Registered\Models\UserRegistration;
 
-use Eightfold\RegisteredLaravel\Traits\Usernameable;
+use Eightfold\Registered\Traits\Usernameable;
 
 trait RegisteredUser
 {

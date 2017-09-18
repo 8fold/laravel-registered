@@ -1,13 +1,13 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Models;
+namespace Eightfold\Registered\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
 use Validator;
 use Illuminate\Database\Eloquent\Builder;
 
-use Eightfold\RegisteredLaravel\Models\UserInvitation;
+use Eightfold\Registered\Models\UserInvitation;
 
 class UserInvitationRequest extends Model
 {

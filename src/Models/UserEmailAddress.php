@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Models;
+namespace Eightfold\Registered\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
@@ -8,7 +8,7 @@ use Validator;
 
 use Illuminate\Database\Eloquent\Builder;
 
-use Eightfold\RegisteredLaravel\Traits\BelongsToUserRegistration;
+use Eightfold\Registered\Traits\BelongsToUserRegistration;
 
 class UserEmailAddress extends Model
 {

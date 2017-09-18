@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Mail;
+namespace Eightfold\Registered\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;

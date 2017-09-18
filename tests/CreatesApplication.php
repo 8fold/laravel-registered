@@ -1,6 +1,6 @@
 <?php
 
-namespace Tests;
+namespace Eightfold\Registered\Tests;
 
 use Illuminate\Contracts\Console\Kernel;
 
@@ -18,5 +18,5 @@ trait CreatesApplication
         $app->make(Kernel::class)->bootstrap();
 
         return $app;
-    }   
+    }
 }

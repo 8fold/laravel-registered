@@ -1,14 +1,14 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel;
+namespace Eightfold\Registered;
 
 use Illuminate\Support\ServiceProvider;
 
 use Illuminate\Support\Facades\Route;
 
-use Eightfold\RegisteredLaravel\Middlewares\RedirectIfNotMe;
+use Eightfold\Registered\Middlewares\RedirectIfNotMe;
 
-use Eightfold\RegisteredLaravel\Models\UserType;
+use Eightfold\Registered\Models\UserType;
 
 class RegisteredServiceProvider extends ServiceProvider
 {

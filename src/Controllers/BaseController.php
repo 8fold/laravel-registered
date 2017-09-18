@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Controllers;
+namespace Eightfold\Registered\Controllers;
 
 use App\Http\Controllers\Controller;
 

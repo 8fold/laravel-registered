@@ -1,8 +1,8 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Controllers;
+namespace Eightfold\Registered\Controllers;
 
-use Eightfold\RegisteredLaravel\Controllers\BaseController;
+use Eightfold\Registered\Controllers\BaseController;
 
 use Auth;
 use Validator;
@@ -11,7 +11,7 @@ use Illuminate\Http\Request;
 
 use Illuminate\Foundation\Auth\RegistersUsers;
 
-use Eightfold\RegisteredLaravel\Models\UserRegistration;
+use Eightfold\Registered\Models\UserRegistration;
 
 class ProfileController extends BaseController
 {

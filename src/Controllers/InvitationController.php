@@ -1,17 +1,17 @@
 <?php
 
-namespace Eightfold\RegisteredLaravel\Controllers;
+namespace Eightfold\Registered\Controllers;
 
-use Eightfold\RegisteredLaravel\Controllers\BaseController;
+use Eightfold\Registered\Controllers\BaseController;
 
 use Auth;
 use Validator;
 use Illuminate\Http\Request;
 
-use Eightfold\RegisteredLaravel\Models\UserInvitation;
-use Eightfold\RegisteredLaravel\Models\UserInvitationRequest;
-use Eightfold\RegisteredLaravel\Models\UserType;
-use Eightfold\RegisteredLaravel\Models\UserEmailAddress;
+use Eightfold\Registered\Models\UserInvitation;
+use Eightfold\Registered\Models\UserInvitationRequest;
+use Eightfold\Registered\Models\UserType;
+use Eightfold\Registered\Models\UserEmailAddress;
 
 class InvitationController extends BaseController
 {
