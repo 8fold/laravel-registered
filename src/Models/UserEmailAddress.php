@@ -53,6 +53,21 @@ class UserEmailAddress extends Model
         return $this->email;
     }
 
+    public function siblings()
+    {
+        return static::where('user_registration_id', $this->user_registration_id)
+            ->where('id', '<>', $this->id)->get();
+    }
+
+    /** Overrides */
+    public function delete()
+    {
+        if ($this->siblings()->count() == 0) {
+            return false;
+        }
+        return parent::delete();
+    }
+
     /** Scopes */
     public function scopeIsDefault(Builder $query, bool $default = true): Builder
     {

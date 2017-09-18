@@ -46,7 +46,8 @@ abstract class TestCase extends BaseTestCase
 
         $config = $app->make('config');
         $config->set([
-            'auth.providers.users.model' => User::class
+            'auth.providers.users.model' => User::class,
+            'registered.invitation_required' => true
         ]);
     }
 

@@ -81,4 +81,21 @@ class RegistrationTest extends TestCase
         $result = $registration->defaultEmail->email;
         $this->assertTrue($expected == $result);
     }
+
+    public function testCannotDeleteLastEmailAddress()
+    {
+        $registration = $this->registerUser();
+        $registration->emailWithAddress('someone@example.com')->delete();
+        $this->assertTrue($registration->emails->count() == 1);
+    }
+
+    public function testCanDeleteEmailAddress()
+    {
+        $registration = $this->registerUser();
+        $registration->addEmail('testing@example.com');
+        $this->assertTrue($registration->emails()->count() == 2);
+
+        $registration->deleteEmail('testing@example.com');
+        $this->assertTrue($registration->emails()->count() == 1);
+    }
 }

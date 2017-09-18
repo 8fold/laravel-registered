@@ -51,7 +51,7 @@ class EmailsController extends BaseController
     public function delete(Request $request)
     {
         $user = Auth::user();
-        $addressToDelete = $user->getEmailAddress($request->address);
+        $addressToDelete = $user->emails->withAddress($request->address)->first();
         $addressToDelete->delete();
         $user->save();
 

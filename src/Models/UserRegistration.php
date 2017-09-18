@@ -10,6 +10,9 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+
 use Eightfold\Registered\Models\UserPasswordReset;
 use Eightfold\Registered\Models\UserInvitation;
 use Eightfold\Registered\Models\UserEmailAddress;
@@ -41,12 +44,12 @@ class UserRegistration extends Model
         'token'
     ];
 
-    static public function invitationRequired()
+    static public function invitationRequired(): bool
     {
         return config('registered.invitation_required');
     }
 
-    static public function isProfileArea()
+    static public function isProfileArea(): bool
     {
         $isProfileArea = false;
         if (Auth::user()) {
@@ -60,7 +63,7 @@ class UserRegistration extends Model
         return $isProfileArea;
     }
 
-    static public function registeredUsers()
+    static public function registeredUsers(): UserRegistration
     {
         $registeredIds = UserRegistration::all()->pluck('user_id')->toArray();
         $userClass = static::belongsToUserClassName();
@@ -156,7 +159,7 @@ class UserRegistration extends Model
         return 'required|alpha_num|max:255|unique:users';
     }
 
-    public function getUsernameAttribute()
+    public function getUsernameAttribute(): string
     {
         if (App::runningUnitTests()) {
             // TODO: There has to be a way to get the user class with this check.
@@ -166,17 +169,17 @@ class UserRegistration extends Model
         return $this->user->username;
     }
 
-    public function sentInvitations()
+    public function sentInvitations(): UserInvitation
     {
         return $this->hasMany(UserInvitation::class, 'inviter_registration_id');
     }
 
-    public function getUnclaimedInvitationsAttribute()
+    public function getUnclaimedInvitationsAttribute(): UserInvitation
     {
         return $this->sentInvitations()->where('claimed_on', null)->get();
     }
 
-    public function getClaimedInvitationsAttribute()
+    public function getClaimedInvitationsAttribute(): UserInvitation
     {
         return $this->sentInvitations()->where('claimed_on', '<>', null)->get();
     }
@@ -186,13 +189,13 @@ class UserRegistration extends Model
      *
      * @return UserInvitation [description]
      */
-    public function invitation()
+    public function invitation(): UserInvitation
     {
         return $this->hasOne(UserInvitation::class);
     }
 
 
-    public function passwordReset()
+    public function passwordReset(): UserPasswordReset
     {
         return $this->hasOne(UserPasswordReset::class, 'user_registration_id');
     }
@@ -202,22 +205,22 @@ class UserRegistration extends Model
      * @return Collection Collection of EmailAddress objects.
      *
      */
-    public function emails()
+    public function emails(): HasMany
     {
         return $this->hasMany(UserEmailAddress::class, 'user_registration_id');
     }
 
-    public function type()
+    public function type(): BelongsTo
     {
         return $this->belongsTo(UserType::class, 'primary_user_type_id');
     }
 
-    public function types()
+    public function types(): UserType
     {
         return $this->belongsToMany(UserType::class);
     }
 
-    public function getDisplayNameAttribute()
+    public function getDisplayNameAttribute(): string
     {
         $string = [];
         if (strlen($this->first_name) > 0) {
@@ -235,27 +238,27 @@ class UserRegistration extends Model
         return $string;
     }
 
-    public function getConfirmUrlAttribute()
+    public function getConfirmUrlAttribute(): string
     {
         return $this->profilePath .'/confirm?token='. $this->token;
     }
 
-    public function getSetPasswordUrlAttribute()
+    public function getSetPasswordUrlAttribute(): string
     {
         return $this->profilePath .'/set-password?token='. $this->token;
     }
 
-    public function getProfilePathAttribute()
+    public function getProfilePathAttribute(): string
     {
         return '/'. $this->type->slug .'/'. $this->username;
     }
 
-    public function getEditProfilePathAttribute()
+    public function getEditProfilePathAttribute(): string
     {
         return $this->profilePath .'/edit';
     }
 
-    public function getLinkAttribute()
+    public function getLinkAttribute(): string
     {
         return '<a href="'.
             $this->profilePath .'">'.
@@ -263,12 +266,12 @@ class UserRegistration extends Model
             '</a>';
     }
 
-    public function getEditAccountPathAttribute()
+    public function getEditAccountPathAttribute(): string
     {
         return $this->profilePath .'/account';
     }
 
-    public function getDefaultEmailAttribute()
+    public function getDefaultEmailAttribute(): ?UserEmailAddress
     {
         return $this->emails()->where('is_default', true)->first();
     }
@@ -279,12 +282,12 @@ class UserRegistration extends Model
      * @return String The default email addres of the user
      *
      */
-    public function getDefaultEmailStringAttribute()
+    public function getDefaultEmailStringAttribute(): string
     {
         return optional($this->defaultEmail)->email;
     }
 
-    public function addEmail(string $email, $isDefault = false)
+    public function addEmail(string $email, $isDefault = false): UserEmailAddress
     {
         if ($isDefault && $default = $this->defaultEmail) {
             if ($email == $default->email) {
@@ -300,7 +303,7 @@ class UserRegistration extends Model
             ]);
     }
 
-    public function setDefaultEmailAttribute(string $email)
+    public function setDefaultEmailAttribute(string $email): ?UserEmailAddress
     {
         // Check for default change.
         if ($currentDefault = $this->defaultEmail) {
@@ -309,7 +312,7 @@ class UserRegistration extends Model
                 $currentDefault->save();
 
             } elseif ($this->defaultEmailString == $email) {
-                return;
+                return null;
 
             }
         }
@@ -321,6 +324,16 @@ class UserRegistration extends Model
         $address->is_default = true;
         $address->save();
         return $address;
+    }
+
+    public function emailWithAddress(string $address): UserEmailAddress
+    {
+        return $this->emails()->withAddress($address)->first();
+    }
+
+    public function deleteEmail(string $address): bool
+    {
+        return $this->emailWithAddress($address)->delete();
     }
 
     /** Scopes */
