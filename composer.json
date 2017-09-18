@@ -32,9 +32,9 @@
         }
     },
     "autoload-dev": {
-        "psr-4": [
+        "psr-4": {
             "Eightfold\\Registered\\Tests\\": "tests/"
-        ]
+        }
     },
     "config": {
         "preferred-install": "dist",
