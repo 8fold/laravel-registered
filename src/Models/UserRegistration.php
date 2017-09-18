@@ -13,8 +13,8 @@ use Eightfold\Registered\Models\UserInvitation;
 use Eightfold\Registered\Models\UserEmailAddress;
 use Eightfold\Registered\Models\UserType;
 
-use Eightfold\TraitsLaravel\Relationships\BelongsToUser;
-use Eightfold\TraitsLaravel\Tokenizable;
+use Eightfold\Traits\Relationships\BelongsToUser;
+use Eightfold\Traits\Tokenizable;
 
 use Eightfold\Registered\Traits\EmailAddressable;
 use Eightfold\Registered\Traits\Typeable;
