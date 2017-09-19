@@ -9,6 +9,8 @@ use Eightfold\Registered\Tests\TestCase;
 use Eightfold\Registered\Models\UserInvitation;
 use Eightfold\Registered\Models\UserRegistration;
 
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+
 class RegistrationTest extends TestCase
 {
     public function testRegistrationConfirmUrl()
@@ -97,5 +99,12 @@ class RegistrationTest extends TestCase
 
         $registration->deleteEmail('testing@example.com');
         $this->assertTrue($registration->emails()->count() == 1);
+    }
+
+    public function testTypesIsProperReturnType()
+    {
+        $registration = $this->registerUser();
+        $types = $registration->types();
+        $this->assertTrue(is_a($types, BelongsToMany::class), get_class($types));
     }
 }
