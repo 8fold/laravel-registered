@@ -107,4 +107,15 @@ class RegistrationTest extends TestCase
         $types = $registration->types();
         $this->assertTrue(is_a($types, BelongsToMany::class), get_class($types));
     }
+
+    public function testCanUpdateUserTypes()
+    {
+        $registration = $this->registerUser();
+        $this->assertTrue($registration->type->slug == 'owners');
+        $this->assertTrue($registration->types->count() == 1, $registration->types);
+
+        $registration->updateTypes('users', ['users', 'owners']);
+        $this->assertTrue($registration->type->slug == 'users');
+        $this->assertTrue($registration->types->count() == 2);
+    }
 }

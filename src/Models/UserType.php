@@ -53,4 +53,17 @@ class UserType extends Model
         return $query->where('slug', $slug);
     }
 
+    public function scopeWithSlugs(Builder $query, array $slugs): Builder
+    {
+        $count = 0;
+        foreach ($slugs as $slug) {
+            if ($count == 0) {
+                $query->where('slug', $slug);
+                $count++;
+
+            } else {
+                $query->orWhere('slug', $slug);
+            }
+        }
+    }
 }

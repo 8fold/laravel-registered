@@ -44,11 +44,6 @@ class UserRegistration extends Model
         'token'
     ];
 
-    static protected function belongsToUserClassName()
-    {
-        return config('auth.providers.users.model');
-    }
-
     static public function invitationRequired(): bool
     {
         return config('registered.invitation_required');
@@ -127,19 +122,19 @@ class UserRegistration extends Model
         $registration->save();
 
         // Update user type.
-        if ($hasInvitation = is_null($type)) {
-            $setType = $invitation->user_type_id;
-            $registration->primary_user_type_id = (is_null($setType))
+        $setType = '';
+        if (is_null($type)) {
+            $setType = (is_null($invitation->user_type_id))
                 ? 2
-                : $setType;
+                : $invitation->user_type_id;
 
-        } elseif ($hasType = is_null($invitation)) {
-            $setType = $type->id;
-            $registration->primary_user_type_id = (is_null($setType))
+        } elseif (is_null($invitation)) {
+            $setType = (is_null($type->id))
                 ? 2
-                : $setType;
+                : $type->id;
 
         }
+        $registration->updateTypes($setType, [$setType]);
 
         // Link invitation to registration.
         if (!is_null($invitation)) {
@@ -221,14 +216,53 @@ class UserRegistration extends Model
         return $this->hasMany(UserEmailAddress::class, 'user_registration_id');
     }
 
+    /** Types */
     public function type(): BelongsTo
     {
         return $this->belongsTo(UserType::class, 'primary_user_type_id');
     }
 
+    public function setTypeAttribute(string $type)
+    {
+        if ($type = UserType::withSlug($type)) {
+            $this->attributes['primary_user_type_id'] = $type->id;
+            $otherTypes = $this->types()->pluck('slug');
+            $this->types = array_merge([$type], $otherTypes);
+        }
+        return true;
+    }
+
     public function types(): BelongsToMany
     {
-        return $this->belongsToMany(UserType::class);
+        return $this->belongsToMany(UserType::class, 'user_registration_user_type', 'user_type_id', 'user_registration_id');
+    }
+
+    public function setTypesAttribute(array $typeSlugs = [])
+    {
+        if (count($types) > 0) {
+            $targetTypeIds = UserType::withSlugs($typeSlugs)->pluck('id');
+            $this->types()->sync($targetTypeIds);
+
+        }
+
+        if (UserRegistration::withType('owners')->count() == 0) {
+            $ownerType = UserType::withSlug('ownders')->first();
+            $this->types()->associate($ownerType->id);
+
+        }
+        return true;
+    }
+
+    public function updateTypes(string $primaryTypeSlug = '', array $otherTypeSlugs = [])
+    {
+        $this->type = $primaryTypeSlug;
+        $this->types = array_merge([$primaryTypeSlug], $otherTypeSlugs);
+        return true;
+    }
+
+    public function getSelectedTypesAttribute(): array
+    {
+        return $this->types()->pluck('slug');
     }
 
     public function getDisplayNameAttribute(): string
