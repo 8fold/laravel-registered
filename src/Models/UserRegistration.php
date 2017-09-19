@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Builder;
 
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 use Eightfold\Registered\Models\UserPasswordReset;
 use Eightfold\Registered\Models\UserInvitation;
@@ -32,8 +33,7 @@ use Eightfold\Registered\Mail\UserRegistered;
  */
 class UserRegistration extends Model
 {
-    use BelongsToUser,
-        Tokenizable,
+    use Tokenizable,
         Typeable;
 
     protected $fillable = [
@@ -43,6 +43,11 @@ class UserRegistration extends Model
     protected $hidden = [
         'token'
     ];
+
+    static protected function belongsToUserClassName()
+    {
+        return config('auth.providers.users.model');
+    }
 
     static public function invitationRequired(): bool
     {
@@ -104,6 +109,7 @@ class UserRegistration extends Model
 
         } else {
             $userClass = static::belongsToUserClassName();
+            dump($userClass);
             $user = $userClass::create([
                     'username' => $username,
                     'email' => $email
@@ -158,6 +164,11 @@ class UserRegistration extends Model
     {
         return 'required|alpha_num|max:255|unique:users';
     }
+
+    // public function user()
+    // {
+    //     return ;
+    // }
 
     public function getUsernameAttribute(): string
     {
@@ -215,7 +226,7 @@ class UserRegistration extends Model
         return $this->belongsTo(UserType::class, 'primary_user_type_id');
     }
 
-    public function types(): UserType
+    public function types(): BelongsToMany
     {
         return $this->belongsToMany(UserType::class);
     }
