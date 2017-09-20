@@ -4,8 +4,10 @@ namespace Eightfold\Registered\Tests\Unit;
 
 use Eightfold\Registered\Tests\TestCase;
 
+use DB;
 // use Eightfold\Registered\Tests\Stubs\User;
 
+use Eightfold\Registered\Models\UserType;
 use Eightfold\Registered\Models\UserInvitation;
 use Eightfold\Registered\Models\UserRegistration;
 
@@ -26,6 +28,7 @@ class RegistrationTest extends TestCase
     public function testDisplayNameUsernameOnly()
     {
         $registration = $this->registerUser();
+        $this->assertNotNull($registration);
         $expected = 'someone';
         $result = $registration->getDisplayNameAttribute();
         $this->assertTrue($expected == $result);
@@ -108,14 +111,46 @@ class RegistrationTest extends TestCase
         $this->assertTrue(is_a($types, BelongsToMany::class), get_class($types));
     }
 
-    public function testCanUpdateUserTypes()
+    public function testApplicationMustHaveOwnerType()
     {
         $registration = $this->registerUser();
         $this->assertTrue($registration->type->slug == 'owners');
-        $this->assertTrue($registration->types->count() == 1, $registration->types);
 
-        $registration->updateTypes('users', ['users', 'owners']);
-        $this->assertTrue($registration->type->slug == 'users');
-        $this->assertTrue($registration->types->count() == 2);
+        $registration->type = 'users';
+        $this->assertTrue($registration->type->slug == 'owners');
+    }
+
+    public function testCanChangePrimaryUserTypeWhenMultipleUsersPresent()
+    {
+        $registration = $this->registerUser();
+        $registration2 = $this->registerUser('other', 'other@example.com');
+
+        $this->assertTrue($registration->type->slug == 'owners');
+        $this->assertTrue(UserRegistration::all()->count() == 2);
+
+        $registration->type = 'users';
+        $registration->save();
+        $this->assertTrue($registration->type->slug == 'users', $registration->type->slug);
+    }
+
+    public function testCanUpdateUserTypes()
+    {
+        $registration = $this->registerUser();
+        $registration2 = $this->registerUser('other', 'other@example.com');
+
+        $this->assertTrue($registration->type->slug == 'owners');
+        $this->assertTrue($registration->scopes->count() == 1, $registration->types);
+
+        $registration->scopes = ['users', 'owners'];// = ['owners', 'users'];
+        $registration->save();
+
+        $userTypes = DB::table('user_registration_user_type')
+            ->where('user_registration_id', $registration->id)
+            ->get();
+
+        dd($userTypes);
+        dump($registration->scopes);
+
+        $this->assertTrue($registration->scopes->count() == 2, $registration->types);
     }
 }

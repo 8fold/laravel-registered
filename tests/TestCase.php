@@ -8,6 +8,7 @@ use Eightfold\Registered\Tests\Stubs\User;
 
 use Eightfold\Registered\RegisteredServiceProvider;
 
+use Eightfold\Registered\Models\UserType;
 use Eightfold\Registered\Models\UserInvitation;
 use Eightfold\Registered\Models\UserRegistration;
 
@@ -24,7 +25,6 @@ abstract class TestCase extends BaseTestCase
         $this->artisan('migrate', ['--database' => 'testing']);
     }
 
-    // use CreatesApplication;
     protected function getPackageProviders($app)
     {
         return [
@@ -51,26 +51,28 @@ abstract class TestCase extends BaseTestCase
         ]);
     }
 
-    public function inviteUser()
+    public function inviteUser($email)
     {
-        $invitation = UserInvitation::invite('someone@example.com');
+        $invitation = UserInvitation::invite($email);
         $this->assertNull($invitation->claimed_on);
         return $invitation;
     }
 
-    public function registerUser()
+    public function registerUser($username = 'someone', $email = 'someone@example.com')
     {
-        $invitation = $this->inviteUser();
+        $invitation = $this->inviteUser($email);
 
-        // POST request data
-        $username = 'someone';
-        $email = 'someone@example.com';
+        if ($registration = UserRegistration::registerUser($username, $email, null, $invitation)) {
+            $this->assertNotNull($registration->type);
+            $this->assertTrue(is_a($registration->type, UserType::class));
+            $slug = $registration->type->slug;
+            $this->assertTrue($slug == 'owners', $slug);
+            $this->assertTrue($invitation->isClaimed, $invitation);
+            return $registration;
 
-        $registration = UserRegistration::registerUser($username, $email, null, $invitation);
+        } else {
+            $this->assertTrue(false, 'Could not register user.');
 
-        $slug = $registration->type->slug;
-        $this->assertTrue($slug == 'owners', $slug);
-        $this->assertTrue($invitation->isClaimed, $invitation);
-        return $registration;
+        }
     }
 }
