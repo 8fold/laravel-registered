@@ -19,13 +19,12 @@ use Eightfold\Registered\Models\UserRegistration;
 use Eightfold\Registered\Models\UserType;
 
 use Eightfold\Traits\PublicKeyable;
-use Eightfold\Registered\Traits\Typeable;
+// use Eightfold\Registered\Traits\Typeable;
 use Eightfold\Registered\Traits\BelongsToUserRegistration;
 
 class UserInvitation extends Model
 {
     use PublicKeyable,
-        Typeable,
         BelongsToUserRegistration;
 
     protected $fillable = [

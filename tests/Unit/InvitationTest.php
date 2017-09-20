@@ -13,7 +13,7 @@ class InvitationTest extends TestCase
 {
     public function testGetInvitationWithEmailAndToken()
     {
-        $invitation = $this->inviteUser();
+        $invitation = $this->inviteUser('something@example.com');
         $followUp = UserInvitation::withEmail($invitation->email)
             ->withToken($invitation->token)
             ->withCode($invitation->code)
@@ -23,7 +23,7 @@ class InvitationTest extends TestCase
 
     public function testSaveBaseInvitation()
     {
-        $this->inviteUser();
+        $this->inviteUser('something@example.com');
         $invitations = UserInvitation::all();
         $this->assertTrue(count($invitations) == 1);
     }
