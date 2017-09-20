@@ -63,9 +63,9 @@ abstract class TestCase extends BaseTestCase
         $invitation = $this->inviteUser($email);
 
         if ($registration = UserRegistration::registerUser($username, $email, null, $invitation)) {
-            $this->assertNotNull($registration->type);
-            $this->assertTrue(is_a($registration->type, UserType::class));
-            $slug = $registration->type->slug;
+            $this->assertNotNull($registration->primaryType);
+            $this->assertTrue(is_a($registration->primaryType, UserType::class));
+            $slug = $registration->primaryType->slug;
             $this->assertTrue($slug == 'owners', $slug);
             $this->assertTrue($invitation->isClaimed, $invitation);
             return $registration;

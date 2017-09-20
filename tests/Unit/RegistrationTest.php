@@ -35,7 +35,9 @@ class RegistrationTest extends TestCase
     public function testHasUsernameAttribute()
     {
         $registration = $this->registerUser();
-        $this->assertTrue($registration->username == 'someone', $registration->username);
+        $expected = 'someone';
+        $result = $registration->username;
+        $this->assertTrue($expected == $result, $registration->username);
     }
 
     public function testRegistrationConfirmUrl()
@@ -137,10 +139,14 @@ class RegistrationTest extends TestCase
     public function testApplicationMustHaveOwnerType()
     {
         $registration = $this->registerUser();
-        $this->assertTrue($registration->type->slug == 'owners');
 
-        $registration->type = 'users';
-        $this->assertTrue($registration->type->slug == 'owners');
+        $this->assertTrue($registration->primaryType->slug == 'owners');
+        $this->assertTrue(UserRegistration::all()->count() == 1);
+
+        $registration->primaryType = UserType::withSlug('users')->first();
+        $this->assertTrue($registration->primaryType->slug == 'users', $registration->primaryType->slug);
+        $this->assertTrue($registration->types()->count() == 2);
+        $this->assertTrue($registration->types()->withSlug('owners')->count() == 1);
     }
 
     public function testCanChangePrimaryUserTypeWhenMultipleUsersPresent()
@@ -148,23 +154,13 @@ class RegistrationTest extends TestCase
         $registration = $this->registerUser();
         $registration2 = $this->registerUser('other', 'other@example.com');
 
-        $this->assertTrue($registration->type->slug == 'owners');
+        $this->assertTrue($registration->primaryType->slug == 'owners');
+        $this->assertTrue($registration2->primaryType->slug == 'owners');
         $this->assertTrue(UserRegistration::all()->count() == 2);
 
-        $registration->type = 'users';
+        $registration->primaryType = UserType::withSlug('users')->first();
         $registration->save();
-        $this->assertTrue($registration->type->slug == 'users', $registration->type->slug);
-    }
-
-    public function testCanUpdateUserTypes()
-    {
-        $registration = $this->registerUser();
-        $registration2 = $this->registerUser('other', 'other@example.com');
-
-        $this->assertTrue($registration->type->slug == 'owners');
-        $this->assertTrue($registration->types->count() == 1, $registration->types);
-
-        $registration->types = ['users', 'owners'];
-        $this->assertTrue($registration->types->count() == 2, $registration->types);
+        $this->assertTrue($registration->types->count() == 2);
+        $this->assertTrue($registration->primaryType->slug == 'users', $registration->primaryType->slug);
     }
 }

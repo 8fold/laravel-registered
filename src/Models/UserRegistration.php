@@ -53,24 +53,10 @@ class UserRegistration extends Model
             return null;
         }
 
+        $userType = static::determineUserType($type, $invitation);
         $user = static::creatUser($username, $email);
         $registration = static::createRegistration($user, $email);
-
-        // Update user type.
-        $setType = '';
-        if (is_null($type)) {
-            $setType = (is_null($invitation->user_type_id))
-                ? 2
-                : $invitation->user_type_id;
-
-        } elseif (is_null($invitation)) {
-            $setType = (is_null($type->id))
-                ? 2
-                : $type->id;
-
-        }
-        $setType = UserType::find($setType)->slug;
-        $registration->type = $setType;
+        $registration->primaryType = $userType;
         $registration->save();
 
         // Link invitation to registration.
@@ -89,6 +75,25 @@ class UserRegistration extends Model
         return $registration;
     }
 
+    static private function determineUserType(UserType $type = null, UserInvitation $invitation = null): UserType
+    {
+        $setType = '';
+        if (static::all()->count() == 0) {
+            $setType = UserType::withSlug('owners');
+
+        } elseif (is_null($type)) {
+            $setType = (is_null($invitation->user_type_id))
+                ? UserType::withSlug('users')
+                : UserType::find($invitation->user_type_id);
+
+        } elseif (is_null($invitation)) {
+            $setType = (is_null($type->id))
+                ? UserType::withSlug('users')
+                : UserType::find($type->id);
+
+        }
+        return $setType->first();
+    }
     static private function creatUser(string $username, string $email)
     {
         $userClass = static::belongsToUserClassName();
@@ -140,11 +145,6 @@ class UserRegistration extends Model
 
     public function getUsernameAttribute(): string
     {
-        // if (App::runningUnitTests()) {
-        //     // TODO: There has to be a way to get the user class with this check.
-        //     $user = \DB::table('users')->where('id', $this->user_id)->first();
-        //     return $user->username;
-        // }
         return $this->user->username;
     }
 
@@ -173,26 +173,55 @@ class UserRegistration extends Model
         return $this->hasOne(UserInvitation::class);
     }
 
-
     public function passwordReset(): UserPasswordReset
     {
         return $this->hasOne(UserPasswordReset::class, 'user_registration_id');
     }
 
-    /**
-     *
-     * @return Collection Collection of EmailAddress objects.
-     *
-     */
-    public function emails(): HasMany
+    /** Types */
+    public function types(): BelongsToMany
     {
-        return $this->hasMany(UserEmailAddress::class, 'user_registration_id');
+        return $this->belongsToMany(UserType::class, 'user_registration_user_type', 'user_registration_id', 'user_type_id');
     }
 
-    /** Types */
-    public function type(): BelongsTo
+    public function getPrimaryTypeAttribute()
     {
-        return $this->belongsTo(UserType::class, 'primary_user_type_id');
+        return $this->types()->wherePivot('is_primary', 1)->first();
+    }
+
+    public function setPrimaryTypeAttribute(UserType $type): UserType
+    {
+        // Get the ids for all my current types.
+        $current = $this->types()->pluck('id')->toArray();
+        $targetId = $type->id;
+        foreach ($current as $currentId) {
+            $this->types()->detach($currentId);
+        }
+
+        // Check for owner
+        if (static::withType('owners')->count() == 0) {
+            $current[] = UserType::withSlug('owners')->first()->id;
+
+        }
+
+        // Merge the id set
+        $merged = array_unique(array_merge([$targetId], $current));
+        foreach ($merged as $typeId) {
+            if ($typeId == $targetId) {
+                $this->types()->attach($typeId, ['is_primary' => true]);
+
+            } else {
+                $this->types()->attach($typeId);
+
+            }
+        }
+        return $this->primaryType;
+    }
+
+
+    public function setTypesAttribute(array $types = [])
+    {
+
     }
 
     /**
@@ -202,54 +231,57 @@ class UserRegistration extends Model
      *
      * @param string $type [description]
      */
-    public function setTypeAttribute(string $type)
-    {
-        if ($type = UserType::withSlug($type)->first()) {
-            $this->type()->associate($type);
+    // public function setTypeAttribute(string $type)
+    // {
+    //     if ($type = UserType::withSlug($type)->first()) {
+    //         $this->type()->associate($type);
 
-            $otherTypes = $this->types()->get()->pluck('slug')->toArray();
-            $merged = array_unique(array_merge([$type->slug], $otherTypes));
-            $this->types = $merged;
+    //         $otherTypes = $this->types()->get()->pluck('slug')->toArray();
+    //         $merged = array_unique(array_merge([$type->slug], $otherTypes));
+    //         $this->types = $merged;
 
-            return true;
-        }
-        return false;
-    }
+    //         return true;
+    //     }
+    //     return false;
+    // }
 
-    public function types(): BelongsToMany
-    {
-        return $this->belongsToMany(UserType::class, 'user_registration_user_type', 'user_type_id', 'user_registration_id');
-    }
+    // public function types(): BelongsToMany
+    // {
+    //     return $this->belongsToMany(UserType::class, 'user_registration_user_type', 'user_registration_id', 'user_type_id');
+    // }
 
     /**
+     * Set other user types for the registration
+     *
      * $user->registration->types = ['{user-type-slug}', '{user-type-slug}']
      *
      * @param array $typeSlugs [description]
      */
-    public function setTypesAttribute(array $typeSlugs = [])
-    {
-        if (count($typeSlugs) > 0) {
-            $primaryTypeId = $this->type->id;
-            $currentTypeIds = UserType::withSlugs($typeSlugs)->pluck('id')->toArray();
-            $merged = array_unique(array_merge([$primaryTypeId], $currentTypeIds));
-            $this->types()->sync($merged);
+    // public function setTypesAttribute(array $typeSlugs = [])
+    // {
+    //     if (count($typeSlugs) > 0) {
+    //         $primaryTypeId = $this->type->id;
+    //         $currentTypeIds = UserType::withSlugs($typeSlugs)->pluck('id')->toArray();
+    //         $merged = array_unique(array_merge([$primaryTypeId], $currentTypeIds));
+    //         $this->types()->sync($merged);
 
-            if (static::withScope('owners')->count() == 0) {
-                $ownerType = UserType::withType('owners')->first();
-                $merged = array_unique([$ownerType->slug], $merged);
-                $this->types = $merged;
+    //         if (static::withScope('owners')->count() == 0) {
+    //             $ownerType = UserType::withType('owners')->first();
+    //             $merged = array_unique([$ownerType->slug], $merged);
+    //             $this->types = $merged;
 
-            }
-            return true;
-        }
-        return false;
-    }
+    //         }
+    //         return true;
+    //     }
+    //     return false;
+    // }
 
-    public function getSelectedTypesAttribute(): array
-    {
-        return $this->types()->pluck('slug');
-    }
+    // public function getSelectedTypesAttribute(): array
+    // {
+    //     return $this->types()->pluck('slug');
+    // }
 
+    /** Strings */
     public function getDisplayNameAttribute(): string
     {
         $string = [];
@@ -280,7 +312,7 @@ class UserRegistration extends Model
 
     public function getProfilePathAttribute(): string
     {
-        return '/'. $this->type->slug .'/'. $this->username;
+        return '/'. $this->primaryType->slug .'/'. $this->username;
     }
 
     public function getEditProfilePathAttribute(): string
@@ -299,6 +331,17 @@ class UserRegistration extends Model
     public function getEditAccountPathAttribute(): string
     {
         return $this->profilePath .'/account';
+    }
+
+    /** Email */
+    /**
+     *
+     * @return Collection Collection of EmailAddress objects.
+     *
+     */
+    public function emails(): HasMany
+    {
+        return $this->hasMany(UserEmailAddress::class, 'user_registration_id');
     }
 
     public function getDefaultEmailAttribute(): ?UserEmailAddress
@@ -367,6 +410,13 @@ class UserRegistration extends Model
     }
 
     /** Scopes */
+    public function scopeWithType(Builder $query, string $typeSlug): Builder
+    {
+        return $query->whereHas('types', function ($query) use ($typeSlug) {
+            $query->where('slug', $typeSlug);
+        });
+    }
+
     public function scopeWithEmail(Builder $query, string $address): Builder
     {
         return $query->whereHas('emails', function ($query) use ($address) {
