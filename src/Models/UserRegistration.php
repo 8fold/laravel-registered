@@ -10,6 +10,7 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
 
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -34,7 +35,7 @@ use Eightfold\Registered\Mail\UserRegistered;
 class UserRegistration extends Model
 {
     use Tokenizable,
-        Typeable;
+        BelongsToUser;
 
     protected $fillable = [
         'token', 'user_id', 'registered_on', 'user_type_id'
@@ -43,44 +44,6 @@ class UserRegistration extends Model
     protected $hidden = [
         'token'
     ];
-
-    static public function invitationRequired(): bool
-    {
-        return config('registered.invitation_required');
-    }
-
-    static public function isProfileArea(): bool
-    {
-        $isProfileArea = false;
-        if (Auth::user()) {
-            $trimmedProfilePath = trim(Auth::user()->registration->profilePath, '/');
-            $allSubPaths = trim(Auth::user()->registration->profilePath, '/') .'/*';
-            if(is_active([$trimmedProfilePath, $allSubPaths])) {
-                $isProfileArea = true;
-
-            }
-        }
-        return $isProfileArea;
-    }
-
-    static public function registeredUsers(): UserRegistration
-    {
-        $registeredIds = UserRegistration::all()->pluck('user_id')->toArray();
-        $userClass = static::belongsToUserClassName();
-        $count = 0;
-        $users = null;
-        foreach ($registeredIds as $id) {
-            if ($count == 0) {
-                $users = $userClass::where('id', $id);
-                $count = 1;
-
-            } else {
-                $users->orWhere('id', $id);
-
-            }
-        }
-        return $users->get();
-    }
 
     static public function registerUser(string $username, string $email, UserType $type = null, UserInvitation $invitation = null): UserRegistration
     {
@@ -128,29 +91,15 @@ class UserRegistration extends Model
 
     static private function creatUser(string $username, string $email)
     {
-        $user = null;
-        if (App::runningUnitTests()) {
-            // TODO: There has to be a way to get the user class with this check.
-            \DB::table('users')->insert([
+        $userClass = static::belongsToUserClassName();
+        $user = $userClass::create([
                 'username' => $username,
                 'email' => $email
             ]);
-            $user = \DB::table('users')
-                ->where('username', $username)
-                ->first();
-
-        } else {
-            $userClass = static::belongsToUserClassName();
-            $user = $userClass::create([
-                    'username' => $username,
-                    'email' => $email
-                ]);
-
-        }
         return $user;
     }
 
-    static private function createRegistration($user, $email)
+    static private function createRegistration($user, $email): UserRegistration
     {
         $registration = static::create([
             'token' => self::generateToken(36),
@@ -160,6 +109,25 @@ class UserRegistration extends Model
         $registration->addEmail($email, true);
         $registration->save();
         return $registration;
+    }
+
+    static public function invitationRequired(): bool
+    {
+        return config('registered.invitation_required');
+    }
+
+    static public function isProfileArea(): bool
+    {
+        $isProfileArea = false;
+        if (Auth::user()) {
+            $trimmedProfilePath = trim(Auth::user()->registration->profilePath, '/');
+            $allSubPaths = trim(Auth::user()->registration->profilePath, '/') .'/*';
+            if(is_active([$trimmedProfilePath, $allSubPaths])) {
+                $isProfileArea = true;
+
+            }
+        }
+        return $isProfileArea;
     }
 
     // TODO: Should be a different way to do this.
@@ -172,11 +140,11 @@ class UserRegistration extends Model
 
     public function getUsernameAttribute(): string
     {
-        if (App::runningUnitTests()) {
-            // TODO: There has to be a way to get the user class with this check.
-            $user = \DB::table('users')->where('id', $this->user_id)->first();
-            return $user->username;
-        }
+        // if (App::runningUnitTests()) {
+        //     // TODO: There has to be a way to get the user class with this check.
+        //     $user = \DB::table('users')->where('id', $this->user_id)->first();
+        //     return $user->username;
+        // }
         return $this->user->username;
     }
 
@@ -200,7 +168,7 @@ class UserRegistration extends Model
      *
      * @return UserInvitation [description]
      */
-    public function invitation(): UserInvitation
+    public function invitation(): HasOne
     {
         return $this->hasOne(UserInvitation::class);
     }
@@ -239,15 +207,16 @@ class UserRegistration extends Model
         if ($type = UserType::withSlug($type)->first()) {
             $this->type()->associate($type);
 
-            $otherTypes = $this->scopes()->get()->pluck('slug')->toArray();
-            $this->scopes = array_merge([$type->slug], $otherTypes);
+            $otherTypes = $this->types()->get()->pluck('slug')->toArray();
+            $merged = array_unique(array_merge([$type->slug], $otherTypes));
+            $this->types = $merged;
 
             return true;
         }
         return false;
     }
 
-    public function scopes(): BelongsToMany
+    public function types(): BelongsToMany
     {
         return $this->belongsToMany(UserType::class, 'user_registration_user_type', 'user_type_id', 'user_registration_id');
     }
@@ -257,43 +226,24 @@ class UserRegistration extends Model
      *
      * @param array $typeSlugs [description]
      */
-    public function setScopesAttribute(array $typeSlugs = [])
+    public function setTypesAttribute(array $typeSlugs = [])
     {
         if (count($typeSlugs) > 0) {
             $primaryTypeId = $this->type->id;
             $currentTypeIds = UserType::withSlugs($typeSlugs)->pluck('id')->toArray();
             $merged = array_unique(array_merge([$primaryTypeId], $currentTypeIds));
-dump($typeSlugs);
-dump($merged);
-            $this->scopes()->sync($merged);
-// dd($this);
-            // foreach ($this->types as $type) {
-            //     $this->types()->detach($type);
-            // }
+            $this->types()->sync($merged);
 
-            // foreach ($targetTypeIds as $id) {
-            //     $type = UserType::find($id)->first();
-            //     $this->types()->attach($type);
-            // }
+            if (static::withScope('owners')->count() == 0) {
+                $ownerType = UserType::withType('owners')->first();
+                $merged = array_unique([$ownerType->slug], $merged);
+                $this->types = $merged;
 
-            // if (UserRegistration::withType('owners')->count() == 0) {
-            //     $ownerType = UserType::withSlug('owners')->first();
-            //     $this->types()->attach($ownerType->id);
-
-            // }
+            }
             return true;
         }
         return false;
     }
-
-    // public function updateTypes(string $primaryTypeSlug = '', array $otherTypeSlugs = [])
-    // {
-    //     $this->type = $primaryTypeSlug;
-
-    //     $merge = array_merge([$primaryTypeSlug], $otherTypeSlugs);
-    //     $this->types = array_unique($merge, SORT_REGULAR);
-    //     return true;
-    // }
 
     public function getSelectedTypesAttribute(): array
     {
@@ -424,7 +374,7 @@ dump($merged);
         });
     }
 
-    public function scopeWithType(Builder $query, string $typeSlug): Builder
+    public function scopeWithScope(Builder $query, string $typeSlug): Builder
     {
         return $query->whereHas('types', function ($query) use ($typeSlug) {
             $query->where('slug', $typeSlug);

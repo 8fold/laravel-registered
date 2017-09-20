@@ -23,9 +23,13 @@ class User extends Authenticatable
         'email'
     ];
 
-    static public function testing()
+    static public function publicKeySalt(): string
     {
-        dd('hello');
+        return 'some salt';
     }
-    // protected $table = 'users';
+
+    static public function publicKeyPrefix(): string
+    {
+        return 'user_';
+    }
 }

@@ -5,16 +5,39 @@ namespace Eightfold\Registered\Tests\Unit;
 use Eightfold\Registered\Tests\TestCase;
 
 use DB;
-// use Eightfold\Registered\Tests\Stubs\User;
+
+use Eightfold\Registered\Tests\Stubs\User;
 
 use Eightfold\Registered\Models\UserType;
 use Eightfold\Registered\Models\UserInvitation;
 use Eightfold\Registered\Models\UserRegistration;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Collection;
 
 class RegistrationTest extends TestCase
 {
+    public function testUserClassName()
+    {
+        $expected = 'Eightfold\Registered\Tests\Stubs\User';
+        $result = config('auth.providers.users.model');
+        $this->assertTrue($expected == $result);
+    }
+
+    public function testRegistrationUserClassName()
+    {
+        $registration = $this->registerUser();
+        $user = $registration->user;
+        $this->assertNotNull(is_a($user, User::class));
+        $this->assertTrue(is_a($user->registration, UserRegistration::class));
+    }
+
+    public function testHasUsernameAttribute()
+    {
+        $registration = $this->registerUser();
+        $this->assertTrue($registration->username == 'someone', $registration->username);
+    }
+
     public function testRegistrationConfirmUrl()
     {
         $registration = $this->registerUser();
@@ -107,8 +130,8 @@ class RegistrationTest extends TestCase
     public function testTypesIsProperReturnType()
     {
         $registration = $this->registerUser();
-        $types = $registration->types();
-        $this->assertTrue(is_a($types, BelongsToMany::class), get_class($types));
+        $types = $registration->types;
+        $this->assertTrue(is_a($types, Collection::class), get_class($types));
     }
 
     public function testApplicationMustHaveOwnerType()
@@ -139,18 +162,9 @@ class RegistrationTest extends TestCase
         $registration2 = $this->registerUser('other', 'other@example.com');
 
         $this->assertTrue($registration->type->slug == 'owners');
-        $this->assertTrue($registration->scopes->count() == 1, $registration->types);
+        $this->assertTrue($registration->types->count() == 1, $registration->types);
 
-        $registration->scopes = ['users', 'owners'];// = ['owners', 'users'];
-        $registration->save();
-
-        $userTypes = DB::table('user_registration_user_type')
-            ->where('user_registration_id', $registration->id)
-            ->get();
-
-        dd($userTypes);
-        dump($registration->scopes);
-
-        $this->assertTrue($registration->scopes->count() == 2, $registration->types);
+        $registration->types = ['users', 'owners'];
+        $this->assertTrue($registration->types->count() == 2, $registration->types);
     }
 }
