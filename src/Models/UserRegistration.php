@@ -90,36 +90,8 @@ class UserRegistration extends Model
             return null;
         }
 
-        // Create user.
-        $user = null;
-        if (App::runningUnitTests()) {
-            // TODO: There has to be a way to get the user class with this check.
-            \DB::table('users')->insert([
-                'username' => $username,
-                'email' => $email
-            ]);
-            $user = \DB::table('users')
-                ->where('username', $username)
-                ->first();
-
-        } else {
-            $userClass = static::belongsToUserClassName();
-            dump($userClass);
-            $user = $userClass::create([
-                    'username' => $username,
-                    'email' => $email
-                ]);
-
-        }
-
-        // Create registration.
-        $registration = static::create([
-            'token' => self::generateToken(36),
-            'user_id' => $user->id,
-            'registered_on' => Carbon::now()
-        ]);
-        $registration->addEmail($email, true);
-        $registration->save();
+        $user = static::creatUser($username, $email);
+        $registration = static::createRegistration($user, $email);
 
         // Update user type.
         $setType = '';
@@ -134,7 +106,9 @@ class UserRegistration extends Model
                 : $type->id;
 
         }
-        $registration->updateTypes($setType, [$setType]);
+        $setType = UserType::find($setType)->slug;
+        $registration->type = $setType;
+        $registration->save();
 
         // Link invitation to registration.
         if (!is_null($invitation)) {
@@ -152,6 +126,42 @@ class UserRegistration extends Model
         return $registration;
     }
 
+    static private function creatUser(string $username, string $email)
+    {
+        $user = null;
+        if (App::runningUnitTests()) {
+            // TODO: There has to be a way to get the user class with this check.
+            \DB::table('users')->insert([
+                'username' => $username,
+                'email' => $email
+            ]);
+            $user = \DB::table('users')
+                ->where('username', $username)
+                ->first();
+
+        } else {
+            $userClass = static::belongsToUserClassName();
+            $user = $userClass::create([
+                    'username' => $username,
+                    'email' => $email
+                ]);
+
+        }
+        return $user;
+    }
+
+    static private function createRegistration($user, $email)
+    {
+        $registration = static::create([
+            'token' => self::generateToken(36),
+            'user_id' => $user->id,
+            'registered_on' => Carbon::now()
+        ]);
+        $registration->addEmail($email, true);
+        $registration->save();
+        return $registration;
+    }
+
     // TODO: Should be a different way to do this.
     // Call from RegisterController - want to maintain this capability
     // without having to know the user object.
@@ -159,11 +169,6 @@ class UserRegistration extends Model
     {
         return 'required|alpha_num|max:255|unique:users';
     }
-
-    // public function user()
-    // {
-    //     return ;
-    // }
 
     public function getUsernameAttribute(): string
     {
@@ -222,43 +227,73 @@ class UserRegistration extends Model
         return $this->belongsTo(UserType::class, 'primary_user_type_id');
     }
 
+    /**
+     * Set the primary user type associated with the rgistration
+     *
+     * $user->registration->type = '{user-type-slug}'
+     *
+     * @param string $type [description]
+     */
     public function setTypeAttribute(string $type)
     {
-        if ($type = UserType::withSlug($type)) {
-            $this->attributes['primary_user_type_id'] = $type->id;
-            $otherTypes = $this->types()->pluck('slug');
-            $this->types = array_merge([$type], $otherTypes);
+        if ($type = UserType::withSlug($type)->first()) {
+            $this->type()->associate($type);
+
+            $otherTypes = $this->scopes()->get()->pluck('slug')->toArray();
+            $this->scopes = array_merge([$type->slug], $otherTypes);
+
+            return true;
         }
-        return true;
+        return false;
     }
 
-    public function types(): BelongsToMany
+    public function scopes(): BelongsToMany
     {
         return $this->belongsToMany(UserType::class, 'user_registration_user_type', 'user_type_id', 'user_registration_id');
     }
 
-    public function setTypesAttribute(array $typeSlugs = [])
+    /**
+     * $user->registration->types = ['{user-type-slug}', '{user-type-slug}']
+     *
+     * @param array $typeSlugs [description]
+     */
+    public function setScopesAttribute(array $typeSlugs = [])
     {
-        if (count($types) > 0) {
-            $targetTypeIds = UserType::withSlugs($typeSlugs)->pluck('id');
-            $this->types()->sync($targetTypeIds);
+        if (count($typeSlugs) > 0) {
+            $primaryTypeId = $this->type->id;
+            $currentTypeIds = UserType::withSlugs($typeSlugs)->pluck('id')->toArray();
+            $merged = array_unique(array_merge([$primaryTypeId], $currentTypeIds));
+dump($typeSlugs);
+dump($merged);
+            $this->scopes()->sync($merged);
+// dd($this);
+            // foreach ($this->types as $type) {
+            //     $this->types()->detach($type);
+            // }
 
+            // foreach ($targetTypeIds as $id) {
+            //     $type = UserType::find($id)->first();
+            //     $this->types()->attach($type);
+            // }
+
+            // if (UserRegistration::withType('owners')->count() == 0) {
+            //     $ownerType = UserType::withSlug('owners')->first();
+            //     $this->types()->attach($ownerType->id);
+
+            // }
+            return true;
         }
-
-        if (UserRegistration::withType('owners')->count() == 0) {
-            $ownerType = UserType::withSlug('ownders')->first();
-            $this->types()->associate($ownerType->id);
-
-        }
-        return true;
+        return false;
     }
 
-    public function updateTypes(string $primaryTypeSlug = '', array $otherTypeSlugs = [])
-    {
-        $this->type = $primaryTypeSlug;
-        $this->types = array_merge([$primaryTypeSlug], $otherTypeSlugs);
-        return true;
-    }
+    // public function updateTypes(string $primaryTypeSlug = '', array $otherTypeSlugs = [])
+    // {
+    //     $this->type = $primaryTypeSlug;
+
+    //     $merge = array_merge([$primaryTypeSlug], $otherTypeSlugs);
+    //     $this->types = array_unique($merge, SORT_REGULAR);
+    //     return true;
+    // }
 
     public function getSelectedTypesAttribute(): array
     {

@@ -65,5 +65,6 @@ class UserType extends Model
                 $query->orWhere('slug', $slug);
             }
         }
+        return $query;
     }
 }
