@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Collection;
 
 use Eightfold\Registered\Models\UserPasswordReset;
 use Eightfold\Registered\Models\UserInvitation;
@@ -184,7 +185,7 @@ class UserRegistration extends Model
         return $this->belongsToMany(UserType::class, 'user_registration_user_type', 'user_registration_id', 'user_type_id');
     }
 
-    public function getPrimaryTypeAttribute()
+    public function getPrimaryTypeAttribute(): UserType
     {
         return $this->types()->wherePivot('is_primary', 1)->first();
     }
@@ -219,67 +220,19 @@ class UserRegistration extends Model
     }
 
 
-    public function setTypesAttribute(array $types = [])
+    public function setTypesAttribute(Collection $types): bool
     {
-
+        // Don't lose primary.
+        $primary = $this->primaryType;
+        $this->types()->sync($types);
+        $this->primaryType = $primary;
+        return true;
     }
 
-    /**
-     * Set the primary user type associated with the rgistration
-     *
-     * $user->registration->type = '{user-type-slug}'
-     *
-     * @param string $type [description]
-     */
-    // public function setTypeAttribute(string $type)
-    // {
-    //     if ($type = UserType::withSlug($type)->first()) {
-    //         $this->type()->associate($type);
-
-    //         $otherTypes = $this->types()->get()->pluck('slug')->toArray();
-    //         $merged = array_unique(array_merge([$type->slug], $otherTypes));
-    //         $this->types = $merged;
-
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
-    // public function types(): BelongsToMany
-    // {
-    //     return $this->belongsToMany(UserType::class, 'user_registration_user_type', 'user_registration_id', 'user_type_id');
-    // }
-
-    /**
-     * Set other user types for the registration
-     *
-     * $user->registration->types = ['{user-type-slug}', '{user-type-slug}']
-     *
-     * @param array $typeSlugs [description]
-     */
-    // public function setTypesAttribute(array $typeSlugs = [])
-    // {
-    //     if (count($typeSlugs) > 0) {
-    //         $primaryTypeId = $this->type->id;
-    //         $currentTypeIds = UserType::withSlugs($typeSlugs)->pluck('id')->toArray();
-    //         $merged = array_unique(array_merge([$primaryTypeId], $currentTypeIds));
-    //         $this->types()->sync($merged);
-
-    //         if (static::withScope('owners')->count() == 0) {
-    //             $ownerType = UserType::withType('owners')->first();
-    //             $merged = array_unique([$ownerType->slug], $merged);
-    //             $this->types = $merged;
-
-    //         }
-    //         return true;
-    //     }
-    //     return false;
-    // }
-
-    // public function getSelectedTypesAttribute(): array
-    // {
-    //     return $this->types()->pluck('slug');
-    // }
+    public function hasType(string $typeSlug): bool
+    {
+        return ($this->types()->withSlug($typeSlug)->count() > 0);
+    }
 
     /** Strings */
     public function getDisplayNameAttribute(): string

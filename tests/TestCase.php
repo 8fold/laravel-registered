@@ -75,4 +75,17 @@ abstract class TestCase extends BaseTestCase
 
         }
     }
+
+    public function seedUserTypes()
+    {
+        UserType::create([
+            'display' => 'New types',
+            'slug' => 'new-types'
+        ]);
+
+        UserType::create([
+            'display' => 'Newer types',
+            'slug' => 'newer-types'
+        ]);
+    }
 }

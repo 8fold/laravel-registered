@@ -30,4 +30,11 @@ class UserTypeTest extends TestCase
         $withSlugs = UserType::withSlugs(['owners', 'users'])->pluck('id')->toArray();
         $this->assertTrue(is_array($withSlugs), $withSlugs);
     }
+
+    public function testCanCreateMoreTypes()
+    {
+        $this->assertTrue(UserType::all()->count() == 2);
+        $this->seedUserTypes();
+        $this->assertTrue(UserType::all()->count() == 4);
+    }
 }

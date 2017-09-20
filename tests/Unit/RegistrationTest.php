@@ -163,4 +163,18 @@ class RegistrationTest extends TestCase
         $this->assertTrue($registration->types->count() == 2);
         $this->assertTrue($registration->primaryType->slug == 'users', $registration->primaryType->slug);
     }
+
+    public function testCanSetMultipleTypes()
+    {
+        $this->seedUserTypes();
+        $registration = $this->registerUser();
+        $types = UserType::withSlugs(['users', 'new-types'])->get();
+        $registration->types = $types;
+        $registration->save();
+        $this->assertTrue($registration->types()->count() == 3);
+        $this->assertTrue($registration->hasType('users'));
+        $this->assertTrue($registration->hasType('owners'));
+        $this->assertTrue($registration->hasType('new-types'));
+        $this->assertFalse($registration->hasType('newer-types'));
+    }
 }
