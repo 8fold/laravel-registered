@@ -46,6 +46,15 @@ class UserRegistration extends Model
         'token'
     ];
 
+    /**
+     * Add a new user to the database with a registration record.
+     *
+     * @param  string              $username   [description]
+     * @param  string              $email      [description]
+     * @param  UserType|null       $type       [description]
+     * @param  UserInvitation|null $invitation [description]
+     * @return [type]                          [description]
+     */
     static public function registerUser(string $username, string $email, UserType $type = null, UserInvitation $invitation = null): UserRegistration
     {
         $noTypeOrInvite = (is_null($type) && is_null($invitation));
@@ -76,6 +85,13 @@ class UserRegistration extends Model
         return $registration;
     }
 
+    /**
+     * Determine user type of registering user
+     *
+     * @param  UserType|null       $type       [description]
+     * @param  UserInvitation|null $invitation [description]
+     * @return [type]                          [description]
+     */
     static private function determineUserType(UserType $type = null, UserInvitation $invitation = null): UserType
     {
         $setType = '';
@@ -95,6 +111,14 @@ class UserRegistration extends Model
         }
         return $setType->first();
     }
+
+    /**
+     * Create the User database record
+     *
+     * @param  string $username [description]
+     * @param  string $email    [description]
+     * @return [type]           [description]
+     */
     static private function creatUser(string $username, string $email)
     {
         $userClass = static::belongsToUserClassName();
@@ -105,6 +129,13 @@ class UserRegistration extends Model
         return $user;
     }
 
+    /**
+     * Create the registration record for the User
+     *
+     * @param  [type] $user  [description]
+     * @param  [type] $email [description]
+     * @return [type]        [description]
+     */
     static private function createRegistration($user, $email): UserRegistration
     {
         $registration = static::create([
@@ -117,11 +148,25 @@ class UserRegistration extends Model
         return $registration;
     }
 
+    /**
+     * Check if an invitation is required to register
+     *
+     * @todo Refactor to include checking number of users; if 0, return false. This
+     *       logic is currently
+     * @return [type] [description]
+     */
     static public function invitationRequired(): bool
     {
+        if (UserRegistration::withType('owners')->count() == 0) {
+            return false;
+        }
         return config('registered.invitation_required');
     }
 
+    /**
+     * [isProfileArea description]
+     * @return boolean [description]
+     */
     static public function isProfileArea(): bool
     {
         $isProfileArea = false;

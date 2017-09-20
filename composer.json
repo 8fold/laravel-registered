@@ -24,7 +24,7 @@
         "orchestra/database": "~3.5.0",
         "orchestra/testbench": "~3.5"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "Eightfold\\UIKit\\": "vendor/8fold/uikit-php/src/",
