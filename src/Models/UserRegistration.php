@@ -64,7 +64,7 @@ class UserRegistration extends Model
         }
 
         $userType = static::determineUserType($type, $invitation);
-        $user = static::creatUser($username, $email);
+        $user = static::createUser($username, $email);
         $registration = static::createRegistration($user, $email);
         $registration->primaryType = $userType;
         $registration->save();
@@ -119,7 +119,7 @@ class UserRegistration extends Model
      * @param  string $email    [description]
      * @return [type]           [description]
      */
-    static private function creatUser(string $username, string $email)
+    static private function createUser(string $username, string $email)
     {
         $userClass = static::belongsToUserClassName();
         $user = $userClass::create([
@@ -194,17 +194,17 @@ class UserRegistration extends Model
         return $this->user->username;
     }
 
-    public function sentInvitations(): UserInvitation
+    public function sentInvitations(): HasMany
     {
         return $this->hasMany(UserInvitation::class, 'inviter_registration_id');
     }
 
-    public function getUnclaimedInvitationsAttribute(): UserInvitation
+    public function getUnclaimedInvitationsAttribute(): Collection
     {
         return $this->sentInvitations()->where('claimed_on', null)->get();
     }
 
-    public function getClaimedInvitationsAttribute(): UserInvitation
+    public function getClaimedInvitationsAttribute(): Collection
     {
         return $this->sentInvitations()->where('claimed_on', '<>', null)->get();
     }
@@ -232,7 +232,36 @@ class UserRegistration extends Model
 
     public function getPrimaryTypeAttribute(): UserType
     {
-        return $this->types()->wherePivot('is_primary', 1)->first();
+        $hasPrimary = !is_null($this->types()->wherePivot('is_primary', 1)->first());
+        if ($hasPrimary) {
+            return $this->types()->wherePivot('is_primary', 1)->first();
+        }
+
+        // We have not set a type yet.
+        // We only have one; therefore, make it the primary.
+        switch ($typeCount = $this->types()->count()) {
+            case ($typeCount >= 2):
+                if ($owner = $this->types()->withSlug('owners')->first()) {
+                    $this->types()->attach($owner->id, ['is_primary' => true]);
+
+                } else {
+                    $user = $this->types()->withSlug('users')->first();
+                    $this->types()->attach($user->id, ['is_primary' => true]);
+                }
+                break;
+
+            case ($typeCount == 1):
+                $typeId = $this->types()->first()->id;
+                $this->types()->attach($typeId, ['is_primary' => true]);
+                break;
+
+            default:
+                $typeId = UserType::withSlug('users')->first();
+                $this->types()->attach($typeId, ['is_primary' => true]);
+                break;
+        }
+        $this->save();
+        return $this->getPrimaryTypeAttribute();
     }
 
     public function setPrimaryTypeAttribute(UserType $type): UserType
@@ -272,6 +301,13 @@ class UserRegistration extends Model
         $this->types()->sync($types);
         $this->primaryType = $primary;
         return true;
+    }
+
+    public function updateTypes(string $primaryType, array $typeSlugs): bool
+    {
+        $this->primaryType = UserType::withSlug($primaryType)->first();
+        $this->primaryTypes = UserType::withSlugs($typeSlugs)->get();
+        return $this;
     }
 
     public function hasType(string $typeSlug): bool
@@ -415,6 +451,21 @@ class UserRegistration extends Model
         });
     }
 
+    public function scopeWithTypes(Builder $query, array $typeSlugs): Builder
+    {
+        $count = 0;
+        foreach ($typeSlugs as $slug) {
+            if ($count == 0) {
+                $query->where('slug', $slug);
+                $count++;
+
+            } else {
+                $query->orWhere('slug', $slug);
+            }
+        }
+        return $query;
+    }
+
     public function scopeWithEmail(Builder $query, string $address): Builder
     {
         return $query->whereHas('emails', function ($query) use ($address) {
@@ -422,12 +473,12 @@ class UserRegistration extends Model
         });
     }
 
-    public function scopeWithScope(Builder $query, string $typeSlug): Builder
-    {
-        return $query->whereHas('types', function ($query) use ($typeSlug) {
-            $query->where('slug', $typeSlug);
-        });
-    }
+    // public function scopeWithScope(Builder $query, string $typeSlug): Builder
+    // {
+    //     return $query->whereHas('types', function ($query) use ($typeSlug) {
+    //         $query->where('slug', $typeSlug);
+    //     });
+    // }
 
     public function scopeWithUsername(Builder $query, string $username): Builder
     {

@@ -20,7 +20,7 @@ class InvitationController extends BaseController
         $registration = Auth::user()->registration;
         $inviteCountString = '';
         $canInvite = true;
-        if ($registration->type->slug == 'owners') {
+        if ($registration->user->isSiteOwner()) {
             $inviteCountString = 'You can send an unlimited number of invitations.';
 
         } else {

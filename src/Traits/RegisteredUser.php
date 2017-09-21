@@ -6,12 +6,18 @@ use Hash;
 use Validator;
 
 use Eightfold\Registered\Models\UserRegistration;
+use Eightfold\Registered\Models\UserType;
 
 trait RegisteredUser
 {
+    public function canViewType(UserType $type): bool
+    {
+        return $this->isSiteOwner;
+    }
+
     public function getUserTypeSlugAttribute()
     {
-        return $this->registration->type->slug;
+        return $this->registration->primaryType->slug;
     }
 
     public function registration()
@@ -21,7 +27,7 @@ trait RegisteredUser
 
     public function getIsSiteOwnerAttribute()
     {
-        return $this->userTypeSlug == 'owners';
+        return $this->registration->hasType('owners');
     }
 
     public function isSiteOwner($string = false)

@@ -86,7 +86,14 @@ if (!\App::runningUnitTests()) {
 
             Route::get('/', $accountController.'@index');
             Route::post('/update-password', $accountController.'@updatePassword');
-            // Managing type.
+        });
+
+        // Managing type.
+        Route::group([
+            'prefix' => $prefix .'/{username}/account',
+            'middleware' => ['web', 'auth']
+        ], function() {
+            $accountController = Eightfold\Registered\Controllers\AccountController::class;
             Route::post('/type', $accountController.'@updateType');
         });
 
