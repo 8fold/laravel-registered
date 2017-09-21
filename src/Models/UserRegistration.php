@@ -453,17 +453,20 @@ class UserRegistration extends Model
 
     public function scopeWithTypes(Builder $query, array $typeSlugs): Builder
     {
-        $count = 0;
-        foreach ($typeSlugs as $slug) {
-            if ($count == 0) {
-                $query->where('slug', $slug);
-                $count++;
+        return $query->whereHas('types', function ($query) use ($typeSlugs) {
+            $count = 0;
+            foreach ($typeSlugs as $slug) {
+                if ($count == 0) {
+                    $query->where('slug', $slug);
+                    $count++;
 
-            } else {
-                $query->orWhere('slug', $slug);
+                } else {
+                    $query->orWhere('slug', $slug);
+                }
             }
-        }
-        return $query;
+            return $query;
+        });
+
     }
 
     public function scopeWithEmail(Builder $query, string $address): Builder
