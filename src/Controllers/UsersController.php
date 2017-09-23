@@ -41,4 +41,15 @@ class UsersController extends BaseController
         }
         abort(404);
     }
+
+    public function processAddUserType(Request $request)
+    {
+        Validator::make($request->all(), ['display' => 'required'])->validate();
+        UserType::create(['display' => $request->display]);
+        return back()
+            ->with('message', [
+                'type' => 'success',
+                'title' => 'User type added'
+            ]);
+    }
 }

@@ -50,6 +50,12 @@ Route::group([
     });
 });
 
+$usersController = Eightfold\Registered\Controllers\UsersController::class;
+
+Route::post('users/types', $usersController.'@processAddUserType')
+    ->middleware('web', 'auth')
+    ->name('add-user-type');
+
 if (!\App::runningUnitTests()) {
     $userTypes = Eightfold\Registered\Models\UserType::userTypesForRoutes();
     foreach ($userTypes as $userPrefix) {
@@ -59,8 +65,8 @@ if (!\App::runningUnitTests()) {
         Route::group([
             'middleware' => ['web'],
             'prefix' => $prefix
-        ], function() {
-            $usersController = Eightfold\Registered\Controllers\UsersController::class;
+        ], function() use ($usersController) {
+
 
             Route::get('/', $usersController.'@index');
         });

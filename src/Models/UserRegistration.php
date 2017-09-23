@@ -303,7 +303,7 @@ class UserRegistration extends Model
         return true;
     }
 
-    public function updateTypes(string $primaryType, array $typeSlugs): bool
+    public function updateTypes(string $primaryType, array $typeSlugs): UserRegistration
     {
         $this->primaryType = UserType::withSlug($primaryType)->first();
         $this->primaryTypes = UserType::withSlugs($typeSlugs)->get();

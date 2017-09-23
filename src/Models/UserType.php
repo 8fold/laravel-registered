@@ -47,6 +47,13 @@ class UserType extends Model
         return $this->belongsToMany(UserRegistration::class);
     }
 
+    public function setDisplayAttribute(string $display): bool
+    {
+        $this->attributes['display'] = $display;
+        $this->attributes['slug'] = str_slug($display);
+        return true;
+    }
+
     /** Scopes */
     public function scopeWithSlug(Builder $query, string $slug): Builder
     {
