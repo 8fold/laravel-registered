@@ -62,7 +62,6 @@ class UserRegistration extends Model
         if ($noTypeOrInvite && $inviteRequiredAndCouldNotclaim) {
             return null;
         }
-
         $userType = static::determineUserType($type, $invitation);
         $user = static::createUser($username, $email);
         $registration = static::createRegistration($user, $email);
@@ -96,20 +95,20 @@ class UserRegistration extends Model
     {
         $setType = '';
         if (static::all()->count() == 0) {
-            $setType = UserType::withSlug('owners');
+            $setType = UserType::withSlug('owners')->first();
 
         } elseif (is_null($type)) {
             $setType = (is_null($invitation->user_type_id))
-                ? UserType::withSlug('users')
+                ? UserType::withSlug('users')->first()
                 : UserType::find($invitation->user_type_id);
 
         } elseif (is_null($invitation)) {
             $setType = (is_null($type->id))
-                ? UserType::withSlug('users')
+                ? UserType::withSlug('users')->first()
                 : UserType::find($type->id);
 
         }
-        return $setType->first();
+        return $setType;
     }
 
     /**
@@ -160,7 +159,7 @@ class UserRegistration extends Model
         if (UserRegistration::withType('owners')->count() == 0) {
             return false;
         }
-        return config('registered.invitation_required');
+        return config('registered.invitations.required');
     }
 
     /**
@@ -391,7 +390,12 @@ class UserRegistration extends Model
      */
     public function getDefaultEmailStringAttribute(): string
     {
-        return optional($this->defaultEmail)->email;
+        if (is_null($this->defaultEmail) && !is_null($this->user->email)) {
+            $default = UserEmailAddress::withAddress($this->user->email)->first();
+            $default->is_default = true;
+            $default->save();
+        }
+        return $this->defaultEmail->email;
     }
 
     public function addEmail(string $email, $isDefault = false): UserEmailAddress

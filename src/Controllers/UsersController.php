@@ -18,7 +18,7 @@ class UsersController extends BaseController
     {
         $typeSlug = $request->route()->uri;
         $type = UserType::withSlug($typeSlug)->first();
-        if (Auth::user() && Auth::user()->canViewType($type)) {
+        if ($type->visible_to == 'all' || (Auth::user() && Auth::user()->canViewType($type))) {
             $view = view('registered::type-homes.users-home');
 
             $typeHasView = View::exists('registered::type-homes.'. $typeSlug .'-home');
