@@ -28,7 +28,7 @@
     "autoload": {
         "psr-4": {
             "Eightfold\\UIKit\\": "vendor/8fold/uikit-php/src/",
-            "Eightfold\\Traits\\": "vendor/8fold/laravel-traits/src/",
+            "Eightfold\\Conveniences\\": "vendor/8fold/php-conveniences/src/",
             "Eightfold\\Registered\\": "src/"
         }
     },

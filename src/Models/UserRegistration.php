@@ -21,8 +21,8 @@ use Eightfold\Registered\Models\UserInvitation;
 use Eightfold\Registered\Models\UserEmailAddress;
 use Eightfold\Registered\Models\UserType;
 
-use Eightfold\Traits\Relationships\BelongsToUser;
-use Eightfold\Traits\Tokenizable;
+use Eightfold\Conveniences\Laravel\UserRelationships\BelongsToUser;
+use Eightfold\Conveniences\Laravel\Attributes\TokenAttribute;
 
 use Eightfold\Registered\Traits\Typeable;
 
@@ -35,7 +35,7 @@ use Eightfold\Registered\Mail\UserRegistered;
  */
 class UserRegistration extends Model
 {
-    use Tokenizable,
+    use TokenAttribute,
         BelongsToUser;
 
     protected $fillable = [
@@ -480,17 +480,5 @@ class UserRegistration extends Model
         });
     }
 
-    // public function scopeWithScope(Builder $query, string $typeSlug): Builder
-    // {
-    //     return $query->whereHas('types', function ($query) use ($typeSlug) {
-    //         $query->where('slug', $typeSlug);
-    //     });
-    // }
 
-    public function scopeWithUsername(Builder $query, string $username): Builder
-    {
-        return $query->whereHas('user', function ($query) use ($username) {
-            $query->where('username', $username);
-        });
-    }
 }
