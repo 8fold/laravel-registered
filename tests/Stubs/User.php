@@ -7,7 +7,7 @@ use Auth;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-use Eightfold\Traits\PublicKeyable;
+use Eightfold\Conviences\Php\Tokens\PublicKeyable;
 
 use Eightfold\Registered\Traits\RegisteredUser;
 use Eightfold\Registered\Traits\RegisteredUserCapabilities;

@@ -18,8 +18,7 @@ use Eightfold\Registered\Models\UserInvitationRequest;
 use Eightfold\Registered\Models\UserRegistration;
 use Eightfold\Registered\Models\UserType;
 
-use Eightfold\Traits\PublicKeyable;
-// use Eightfold\Registered\Traits\Typeable;
+use Eightfold\Conveniences\Php\Tokens\PublicKeyable;
 use Eightfold\Registered\Traits\BelongsToUserRegistration;
 
 class UserInvitation extends Model

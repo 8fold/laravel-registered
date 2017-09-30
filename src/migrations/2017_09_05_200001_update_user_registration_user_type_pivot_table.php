@@ -29,7 +29,7 @@ class UpdateUserRegistrationUserTypePivotTable extends Migration
     public function down()
     {
         Schema::table('user_registration_user_type', function(Blueprint $table) {
-            $this->dropColumn('is_primary');
+            $table->dropColumn('is_primary');
         });
     }
 }

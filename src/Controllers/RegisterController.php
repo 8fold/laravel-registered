@@ -80,7 +80,7 @@ class RegisterController extends BaseController
             : '';
         $token = $request->token;
 
-        $hasOwner = (UserRegistration::withType('owners')->count() > 0);
+        $hasOwner = UserRegistration::hasOwner();
         $view = view('registered::workflow-registration.register')
             ->with('invitationRequired', $invitationRequired)
             ->with('invitationRequestable', $invitationRequestable)
