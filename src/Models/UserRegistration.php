@@ -85,10 +85,11 @@ class UserRegistration extends Model
     }
 
     /**
-     * [hasOwner description]
+     * Check whether the application has a user registered as the owner.
+     *
      * @return boolean [description]
      */
-    static public function hasOwner()
+    static public function hasOwner(): bool
     {
         return (static::withType('owners')->count() > 0);
     }
