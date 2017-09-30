@@ -84,6 +84,10 @@ class UserRegistration extends Model
         return $registration;
     }
 
+    /**
+     * [hasOwner description]
+     * @return boolean [description]
+     */
     static public function hasOwner()
     {
         return (static::withType('owners')->count() > 0);
