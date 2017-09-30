@@ -47,10 +47,31 @@ class UserType extends Model
         return $this->belongsToMany(UserRegistration::class);
     }
 
+    public function setDisplayAttribute(string $display): bool
+    {
+        $this->attributes['display'] = $display;
+        $this->attributes['slug'] = str_slug($display);
+        return true;
+    }
+
     /** Scopes */
     public function scopeWithSlug(Builder $query, string $slug): Builder
     {
         return $query->where('slug', $slug);
     }
 
+    public function scopeWithSlugs(Builder $query, array $slugs): Builder
+    {
+        $count = 0;
+        foreach ($slugs as $slug) {
+            if ($count == 0) {
+                $query->where('slug', $slug);
+                $count++;
+
+            } else {
+                $query->orWhere('slug', $slug);
+            }
+        }
+        return $query;
+    }
 }

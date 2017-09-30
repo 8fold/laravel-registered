@@ -4,6 +4,7 @@ namespace Eightfold\Registered;
 
 use Illuminate\Support\ServiceProvider;
 
+use App;
 use Illuminate\Support\Facades\Route;
 
 use Eightfold\Registered\Middlewares\RedirectIfNotMe;
@@ -57,7 +58,7 @@ class RegisteredServiceProvider extends ServiceProvider
     {
         $discardRoutes = config('registered.headless.routes');
         $discardViews = config('registered.headless.views');
-        $useRoutes = (!$discardRoutes && !$discardViews);
+        $useRoutes = (!$discardRoutes && !$discardViews && !App::runningUnitTests());
         if ($useRoutes) {
             include __DIR__.'/routes/routes.php';
         }

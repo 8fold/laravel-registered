@@ -3,35 +3,27 @@
 namespace Eightfold\Registered\Tests\Unit;
 
 use Eightfold\Registered\Tests\TestCase;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 
-use Eightfold\Registered\Models\User;
+use Eightfold\Registered\Tests\Stubs\User;
+
 use Eightfold\Registered\Models\UserInvitation;
 use Eightfold\Registered\Models\UserRegistration;
 
 class InvitationTest extends TestCase
 {
-    use RefreshDatabase;
-
-    public function inviteUser()
+    public function testGetInvitationWithEmailAndToken()
     {
-        return UserInvitation::invite('someone@example.com');
-    }
-
-    public function registerUser()
-    {
-        $invitation = $this->inviteUser();
-        return UserRegistration::registerUser('someone', 'someone@example.com', 'user', $invitation->token, $invitation->code);
-    }
-
-    public function testInvitationIsRequired()
-    {
-        $this->assertTrue(config('registration-management.invitation_required'));
+        $invitation = $this->inviteUser('something@example.com');
+        $followUp = UserInvitation::withEmail($invitation->email)
+            ->withToken($invitation->token)
+            ->withCode($invitation->code)
+            ->first();
+        $this->assertNotNull($followUp, $followUp);
     }
 
     public function testSaveBaseInvitation()
     {
-        $this->inviteUser();
+        $this->inviteUser('something@example.com');
         $invitations = UserInvitation::all();
         $this->assertTrue(count($invitations) == 1);
     }
@@ -39,7 +31,7 @@ class InvitationTest extends TestCase
     public function testClaimInvitation()
     {
         $claimed = $this->registerUser();
-        $this->assertNotNull($claimed);
+        $this->assertNotNull($claimed, $claimed);
         $this->assertTrue(is_a($claimed, UserRegistration::class));
     }
 }

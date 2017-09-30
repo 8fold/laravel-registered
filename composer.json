@@ -11,23 +11,24 @@
     ],
     "require": {
         "php": ">=7.0",
-        "laravel/framework": "5.5.*",
-        "laravel/tinker": "^1.0",
+        "laravel/framework": "~5.5.0",
+        "fzaninotto/faker": "~1.4",
         "doctrine/dbal": "^2.5",
-        "watson/active": "2.0.*"
+        "8fold/laravel-traits": "dev-master@dev",
+        "phpunit/php-code-coverage": "^5.2@dev"
     },
     "require-dev": {
-        "fzaninotto/faker": "~1.4",
-        "mockery/mockery": "0.9.*",
-        "phpunit/phpunit": "~5.7",
-        "symfony/css-selector": "3.1.*",
-        "symfony/dom-crawler": "3.1.*"
+        "mockery/mockery": "^0.9.4",
+        "phpunit/phpunit": "~6.0",
+        "phpunit/php-code-coverage": "5.2.2",
+        "orchestra/database": "~3.5.0",
+        "orchestra/testbench": "~3.5"
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "autoload": {
         "psr-4": {
             "Eightfold\\UIKit\\": "vendor/8fold/uikit-php/src/",
-            "Eightfold\\Traits\\": "vendor/8fold/traits-laravel/src/",
+            "Eightfold\\Conveniences\\": "vendor/8fold/php-conveniences/src/",
             "Eightfold\\Registered\\": "src/"
         }
     },
@@ -37,12 +38,6 @@
         }
     },
     "config": {
-        "preferred-install": "dist",
-        "platform": {
-            "php": "7.0.12"
-        }
+        "preferred-install": "dist"
     }
 }
-
-
-

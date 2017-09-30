@@ -56,9 +56,9 @@ class CreateUserTypesTable extends Migration
         Schema::table('user_registrations', function (Blueprint $table) {
             $table->integer('primary_user_type_id')
                 ->unsigned()
+                ->default(2)
                 ->comment('The primary type of the user.');
             $table->foreign('primary_user_type_id')
-                ->default(2)
                 ->references('id')
                 ->on('user_types')
                 ->onDelete('cascade')

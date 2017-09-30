@@ -34,6 +34,7 @@ class UpdateUsersTable extends Migration
         if (!Schema::hasColumn('users', 'username')) {
             Schema::table('users', function(Blueprint $table) {
                 $table->string('username')
+                    ->nullable()
                     ->unique()
                     ->comment = "Used to create the member page URI.";
             });
