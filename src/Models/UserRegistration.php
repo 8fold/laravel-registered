@@ -84,6 +84,11 @@ class UserRegistration extends Model
         return $registration;
     }
 
+    static public function hasOwner()
+    {
+        return (static::withType('owners')->count() > 0);
+    }
+
     /**
      * Determine user type of registering user
      *

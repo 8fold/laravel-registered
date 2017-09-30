@@ -107,16 +107,16 @@ if (!\App::runningUnitTests()) {
         Route::group([
                 'prefix' => $prefix .'/{username}',
                 'middleware' => ['web']
-            ], function() {
+            ], function() use ($prefix) {
             $profileController = Eightfold\Registered\Controllers\ProfileController::class;
 
             Route::get('/', $profileController.'@index');
             Route::get('/confirm', $profileController.'@confirm')
-                ->name('user.confirmaiton');
+                ->name($prefix .'.confirmaiton');
             Route::get('/set-password', $profileController.'@showEstablishPasswordForm')
-                ->name('user.showEstablishPasswordForm');
+                ->name($prefix .'.showEstablishPasswordForm');
             Route::post('/set-password', $profileController.'@establishPassword')
-                ->name('user.establishPassword');
+                ->name($prefix .'.establishPassword');
 
             // Editing profile.
             Route::get('/edit', $profileController .'@showEditProfile');
