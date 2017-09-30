@@ -53,18 +53,24 @@ class AccountController extends BaseController
 
     public function updateType(Request $request, $username)
     {
-        $registration = UserRegistration::withUsername($username);
-        if (UserRegistration::convertToType($registration, $request->type)) {
+        if (!Auth::user()->canChangeUserTypes) {
             return back()
                 ->with('message', [
-                        'type' => 'success',
-                        'title' => 'User type successfully changed'
-                    ]);
+                    'type' => 'error',
+                    'title' => 'Not authorized',
+                    'text' => '<p>Could not complete your request.</p>'
+                ]);
         }
+
+        $registration = UserRegistration::withUsername($username)
+            ->first()
+            ->updateTypes($request->primary_type, $request->types);
+
         return back()
             ->with('message', [
-                    'type' => 'error',
-                    'title' => 'I was not able to change the user type'
-                ]);
+                'type' => 'success',
+                'title' => 'User types updates successfully.',
+                'text' => '<p>The user types for '. $registration->displayName .' were successfully updated. Please look at their record and verify.</p>'
+            ]);
     }
 }

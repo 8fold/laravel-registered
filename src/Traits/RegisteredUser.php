@@ -6,16 +6,18 @@ use Hash;
 use Validator;
 
 use Eightfold\Registered\Models\UserRegistration;
-
-use Eightfold\Registered\Traits\Usernameable;
+use Eightfold\Registered\Models\UserType;
 
 trait RegisteredUser
 {
-    use Usernameable;
+    public function canViewType(UserType $type): bool
+    {
+        return $this->isSiteOwner;
+    }
 
     public function getUserTypeSlugAttribute()
     {
-        return $this->registration->type->slug;
+        return $this->registration->primaryType->slug;
     }
 
     public function registration()
@@ -25,7 +27,7 @@ trait RegisteredUser
 
     public function getIsSiteOwnerAttribute()
     {
-        return $this->userTypeSlug == 'owners';
+        return $this->registration->hasType('owners');
     }
 
     public function isSiteOwner($string = false)
@@ -53,5 +55,46 @@ trait RegisteredUser
     {
         $this->attributes['password'] = Hash::make($pass);
         $this->save();
+    }
+
+    public function setUsernameAttribute(string $username): bool
+    {
+        if (static::usernameValidatorPassed($username)) {
+            $this->usernameValidator($username)->validate();
+            $this->attributes['username'] = strtolower($username);
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     *
+     * @param  string $username The username of the person you are looking for.
+     *
+     * @return User
+     */
+    static public function withUsername(string $username)
+    {
+        return static::where('username', $username)->first();
+    }
+
+    static protected function usernameValidatorPassed(string $username): bool
+    {
+        if (static::usernameValidator($username)->fails()) {
+            return false;
+        }
+        return true;
+    }
+
+    static protected function usernameValidator(string $username)
+    {
+        return Validator::make(['username' => $username], [
+            'username' => static::usernameValidation()
+        ]);
+    }
+
+    static public function usernameValidation(): string
+    {
+        return UserRegistration::usernameValidation();
     }
 }

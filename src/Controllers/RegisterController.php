@@ -149,9 +149,6 @@ class RegisterController extends BaseController
                 ? UserType::withSlug('owners')->first()
                 : UserType::withSlug('users')->first();
 
-        } else {
-            $type = UserType::find($invitation->user_type_id);
-
         }
 
         $username = $request->username;

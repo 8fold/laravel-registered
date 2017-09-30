@@ -16,33 +16,40 @@ class UsersController extends BaseController
 {
     public function index(Request $request)
     {
-        $type = $request->route()->uri;
-        if ($this->canViewType($type)) {
-            $view = (View::exists('registered::type-homes.'. $type .'-home'))
-                ? view('registered::type-homes.'. $type .'-home')
-                : view('registered::type-homes.users-home');
+        $typeSlug = $request->route()->uri;
+        $type = UserType::withSlug($typeSlug)->first();
+        if ($type->visible_to == 'all' || (Auth::user() && Auth::user()->canViewType($type))) {
+            $view = view('registered::type-homes.users-home');
 
-            $registrations = UserRegistration::withType($type)->get();
-            if ($type == 'users') {
+            $typeHasView = View::exists('registered::type-homes.'. $typeSlug .'-home');
+            if ($typeHasView) {
+                $view = view('registered::type-homes.'. $typeSlug .'-home');
+            }
+
+            $registrations = UserRegistration::withType($typeSlug)->get();
+            if ($typeSlug == 'users') {
                 $registrations = UserRegistration::all();
             }
 
+            $userTypeSelectOptions = UserType::all()
+                ->pluck('display', 'slug')
+                ->toArray();
+
             return $view->with('registrations', $registrations)
-                ->with('user_type', $type);
+                ->with('userType', $type)
+                ->with('userTypeSelectOptions', $userTypeSelectOptions);
         }
         abort(404);
     }
 
-    private function canViewType($type)
+    public function processAddUserType(Request $request)
     {
-        $myType = 'all';
-        if (Auth::user() && $t = Auth::user()->registration->type->slug) {
-            $myType = $t;
-        }
-        $visibleTypes = UserType::where('slug', $type)
-            ->first()
-            ->visible_to;
-        $visibleByTypes = explode(',', $visibleTypes);
-        return in_array($myType, $visibleByTypes) || in_array('all', $visibleByTypes);
+        Validator::make($request->all(), ['display' => 'required'])->validate();
+        UserType::create(['display' => $request->display]);
+        return back()
+            ->with('message', [
+                'type' => 'success',
+                'title' => 'User type added'
+            ]);
     }
 }

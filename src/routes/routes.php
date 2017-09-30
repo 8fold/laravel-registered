@@ -50,62 +50,77 @@ Route::group([
     });
 });
 
-$userTypes = Eightfold\Registered\Models\UserType::userTypesForRoutes();
-foreach ($userTypes as $userPrefix) {
-    $prefix = $userPrefix['slug'];
+$usersController = Eightfold\Registered\Controllers\UsersController::class;
 
-    // User type lists.
-    Route::group([
-        'middleware' => ['web'],
-        'prefix' => $prefix
-    ], function() {
-        $usersController = Eightfold\Registered\Controllers\UsersController::class;
+Route::post('users/types', $usersController.'@processAddUserType')
+    ->middleware('web', 'auth')
+    ->name('add-user-type');
 
-        Route::get('/', $usersController.'@index');
-    });
+if (!\App::runningUnitTests()) {
+    $userTypes = Eightfold\Registered\Models\UserType::userTypesForRoutes();
+    foreach ($userTypes as $userPrefix) {
+        $prefix = $userPrefix['slug'];
 
-    // Managing emails.
-    Route::group([
-        'prefix' => $prefix .'/{username}/account/emails',
-        'middleware' => ['web', 'auth', 'registered-only-me']
-    ], function() {
-        $emailsController = Eightfold\Registered\Controllers\EmailsController::class;
+        // User type lists.
+        Route::group([
+            'middleware' => ['web'],
+            'prefix' => $prefix
+        ], function() use ($usersController) {
 
-        Route::post('/add', $emailsController.'@addEmailAddress');
-        Route::post('/primary', $emailsController.'@makePrimary');
-        Route::post('/delete', $emailsController.'@delete');
-    });
 
-    // Managing password.
-    Route::group([
-        'prefix' => $prefix .'/{username}/account',
-        'middleware' => ['web', 'auth', 'registered-only-me']
-    ], function() {
-        $accountController = Eightfold\Registered\Controllers\AccountController::class;
+            Route::get('/', $usersController.'@index');
+        });
 
-        Route::get('/', $accountController.'@index');
-        Route::post('/update-password', $accountController.'@updatePassword');
-        // Managing type.
-        Route::post('/type', $accountController.'@updateType');
-    });
-
-    // Registering password.
-    Route::group([
-            'prefix' => $prefix .'/{username}',
-            'middleware' => ['web']
+        // Managing emails.
+        Route::group([
+            'prefix' => $prefix .'/{username}/account/emails',
+            'middleware' => ['web', 'auth', 'registered-only-me']
         ], function() {
-        $profileController = Eightfold\Registered\Controllers\ProfileController::class;
+            $emailsController = Eightfold\Registered\Controllers\EmailsController::class;
 
-        Route::get('/', $profileController.'@index');
-        Route::get('/confirm', $profileController.'@confirm')
-            ->name('user.confirmaiton');
-        Route::get('/set-password', $profileController.'@showEstablishPasswordForm')
-            ->name('user.showEstablishPasswordForm');
-        Route::post('/set-password', $profileController.'@establishPassword')
-            ->name('user.establishPassword');
+            Route::post('/add', $emailsController.'@addEmailAddress');
+            Route::post('/primary', $emailsController.'@makePrimary');
+            Route::post('/delete', $emailsController.'@delete');
+        });
 
-        // Editing profile.
-        Route::get('/edit', $profileController .'@showEditProfile');
-        Route::post('/edit/update-names', $profileController .'@updateProfileInformation');
-    });
+        // Managing password.
+        Route::group([
+            'prefix' => $prefix .'/{username}/account',
+            'middleware' => ['web', 'auth', 'registered-only-me']
+        ], function() {
+            $accountController = Eightfold\Registered\Controllers\AccountController::class;
+
+            Route::get('/', $accountController.'@index');
+            Route::post('/update-password', $accountController.'@updatePassword');
+        });
+
+        // Managing type.
+        Route::group([
+            'prefix' => $prefix .'/{username}/account',
+            'middleware' => ['web', 'auth']
+        ], function() {
+            $accountController = Eightfold\Registered\Controllers\AccountController::class;
+            Route::post('/type', $accountController.'@updateType');
+        });
+
+        // Registering password.
+        Route::group([
+                'prefix' => $prefix .'/{username}',
+                'middleware' => ['web']
+            ], function() {
+            $profileController = Eightfold\Registered\Controllers\ProfileController::class;
+
+            Route::get('/', $profileController.'@index');
+            Route::get('/confirm', $profileController.'@confirm')
+                ->name('user.confirmaiton');
+            Route::get('/set-password', $profileController.'@showEstablishPasswordForm')
+                ->name('user.showEstablishPasswordForm');
+            Route::post('/set-password', $profileController.'@establishPassword')
+                ->name('user.establishPassword');
+
+            // Editing profile.
+            Route::get('/edit', $profileController .'@showEditProfile');
+            Route::post('/edit/update-names', $profileController .'@updateProfileInformation');
+        });
+    }
 }
