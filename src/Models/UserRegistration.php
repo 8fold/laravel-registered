@@ -91,7 +91,10 @@ class UserRegistration extends Model
      */
     static public function hasOwner(): bool
     {
-        return (static::withType('owners')->count() > 0);
+        if ($owner = static::withType('owners')->first()) {
+            return !is_null($owner->user->password);
+        }
+        return false;
     }
 
     /**
