@@ -39,7 +39,7 @@ class UserRegistration extends Model
         BelongsToUser;
 
     protected $fillable = [
-        'token', 'user_id', 'registered_on', 'user_type_id'
+        'token', 'user_id', 'registered_on', 'primary_user_type_id'
     ];
 
     protected $hidden = [
@@ -64,7 +64,7 @@ class UserRegistration extends Model
         }
         $userType = static::determineUserType($type, $invitation);
         $user = static::createUser($username, $email);
-        $registration = static::createRegistration($user, $email);
+        $registration = static::createRegistration($user, $email, $userType);
         $registration->primaryType = $userType;
         $registration->save();
 
@@ -148,12 +148,13 @@ class UserRegistration extends Model
      * @param  [type] $email [description]
      * @return [type]        [description]
      */
-    static private function createRegistration($user, $email): UserRegistration
+    static private function createRegistration($user, $email, $primaryUserType): UserRegistration
     {
         $registration = static::create([
             'token' => self::generateToken(36),
             'user_id' => $user->id,
-            'registered_on' => Carbon::now()
+            'registered_on' => Carbon::now(),
+            'primary_user_type_id' => $primaryUserType->id
         ]);
         $registration->addEmail($email, true);
         $registration->save();
