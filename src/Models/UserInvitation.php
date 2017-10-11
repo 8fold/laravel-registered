@@ -18,12 +18,12 @@ use Eightfold\Registered\Models\UserInvitationRequest;
 use Eightfold\Registered\Models\UserRegistration;
 use Eightfold\Registered\Models\UserType;
 
-use Eightfold\Conveniences\Php\Tokens\PublicKeyable;
+use Eightfold\Conveniences\Laravel\Attributes\PublicKeyAttribute;
 use Eightfold\Registered\Traits\BelongsToUserRegistration;
 
 class UserInvitation extends Model
 {
-    use PublicKeyable,
+    use PublicKeyAttribute,
         BelongsToUserRegistration;
 
     protected $fillable = [
@@ -121,6 +121,11 @@ class UserInvitation extends Model
     public function senderRegistration(): BelongsTo
     {
         return $this->belongsTo(UserRegistration::class, 'inviter_registration_id');
+    }
+
+    public function type(): BelongsTo
+    {
+        return $this->belongsTo(UserType::class, 'user_type_id');
     }
 
     public function submit(UserRegistration $registration): UserInvitation

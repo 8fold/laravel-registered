@@ -68,7 +68,7 @@ class InvitationController extends BaseController
 
     public function resendInvite($invitationKey)
     {
-        $invitation = UserInvitation::publicKey($invitationKey)->first();
+        $invitation = UserInvitation::withPublicKey($invitationKey)->first();
         if (is_null($invitation)) {
             return back()
                 ->with('message', [
