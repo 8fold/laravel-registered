@@ -6,6 +6,7 @@ use Eightfold\Registered\Controllers\BaseController;
 
 use View;
 use Auth;
+use File;
 use Validator;
 use Illuminate\Http\Request;
 
@@ -35,9 +36,40 @@ class UsersController extends BaseController
                 ->pluck('display', 'slug')
                 ->toArray();
 
+            // TODO: Put this on the registration class ??
+            // TODO: This depends on classes that aren't part of this package
+            //       we either need to merge registered and profiled or figure
+            //       something else out.
+            $registrationLinks = [];
+            foreach ($registrations as $registration) {
+                $registrationLinks[] = [
+                    'element' => 'li',
+                    'content' => [
+                        [
+                            'element' => 'Eightfold\UIKit\UIKit::link',
+                            'href' => url($registration->profilePath),
+                            'content' => [
+                                $registration->user->profile->avatarFigure,
+                                [
+                                    // this will be the image container span
+                                    'element' => 'span',
+                                    'content' => 'Profile for'
+                                ],
+                                [
+                                    // this will be the display text
+                                    'element' => 'span',
+                                    'content' => ' '. $registration->displayName
+                                ]
+                            ]
+                        ]
+                    ]
+                ];
+            }
+
             return $view->with('registrations', $registrations)
                 ->with('userType', $type)
-                ->with('userTypeSelectOptions', $userTypeSelectOptions);
+                ->with('userTypeSelectOptions', $userTypeSelectOptions)
+                ->with('registrationLinks', $registrationLinks);
         }
         abort(404);
     }

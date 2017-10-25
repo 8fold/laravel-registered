@@ -6,6 +6,7 @@ use Eightfold\Registered\Controllers\BaseController;
 
 use Auth;
 use Validator;
+use Session;
 use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
 
@@ -67,35 +68,19 @@ class RegisterController extends BaseController
         // TODO: This doesn't appear to be working.
         if (Auth::user()) {
             return redirect(Auth::user()->registration->profilePath)
-                ->with('message', [
-                    'title' => 'Sign out first',
-                    'text' => '<p>You are signed in to the site elsewhere. Please sign out of that account first.</p><p>We also recommend that you maintain only one account.</p>'
-                ]);
+                ->with('message', trans('registered::messages.sign-out-first'));
         }
 
-        $invitationRequired = config('registered.invitations.required');
-        $invitationRequestable = config('registered.invitations.requestable');
-        $tosLink = (strlen(config('registered.tos_url')) > 0)
-            ? '<a href="'. env('APP_DOMAIN', '') . config('registered.tos_url') .'">terms of service</a>'
-            : '';
-        $token = $request->token;
-
-        $hasOwner = UserRegistration::hasOwner();
+        $form = UserRegistration::registrationForm($request);
         $view = view('registered::workflow-registration.register')
-            ->with('invitationRequired', $invitationRequired)
-            ->with('invitationRequestable', $invitationRequestable)
-            ->with('invitationToken', $token)
-            ->with('tosLink', $tosLink)
-            ->with('hasOwner', $hasOwner);
-        if ($invitationRequired && is_null($token)) {
+            ->with('form', $form);
+
+        $inviteRequired = config('registered.invitations.required');
+        if ($inviteRequired && is_null($request->token)) {
             return $view
-                ->with('message', [
-                    'title' => 'Invitation required',
-                    'text' => '<p>Our site is invitation only. If you received an invitation, please try the link in the email again.</p>'
-                ]);
+                ->with('message', trans('registered::messages.invitation-required'));
 
-
-        } elseif ($invitationRequired && !is_null($token)) {
+        } elseif ($inviteRequired && !is_null($request->token)) {
             if ($invitation = UserInvitation::withToken($request->token)->first()) {
                 $email = $invitation->email;
                 return $view->with('email', $email);
@@ -113,7 +98,7 @@ class RegisterController extends BaseController
             ->with('message', [
                     'type' => 'success',
                     'title' => 'Request submitted',
-                    'text' => 'Your invitation request has been submitted successfully.'
+                    'body' => 'Your invitation request has been submitted successfully.'
                 ]);
     }
 
@@ -139,7 +124,7 @@ class RegisterController extends BaseController
                 ->with('message', [
                         'type' => 'warning',
                         'title' => 'No invitation found',
-                        'text' => '<p>Our site is invitation only and we could not locate an invitation with the information you provided. Please try again.</p>'
+                        'body' => '<p>Our site is invitation only and we could not locate an invitation with the information you provided. Please try again.</p>'
                     ]);
         }
 
@@ -164,7 +149,7 @@ class RegisterController extends BaseController
             ->with('message', [
                 'type' => 'error',
                 'title' => 'An unknown error occurred',
-                'text' => '<p>Not sure what happened here, please try again.</p>'
+                'body' => '<p>Not sure what happened here, please try again.</p>'
             ]);
     }
 

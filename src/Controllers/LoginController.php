@@ -118,7 +118,7 @@ class LoginController extends BaseController
                 ->with('message', [
                     'type' => 'error',
                     'title' => 'Email and username do not match',
-                    'text' => '<p>The username entered does not belong to the email address provided; or, vice versa. Please try again.</p>'
+                    'body' => '<p>The username entered does not belong to the email address provided; or, vice versa. Please try again.</p>'
                 ]);
 
         }
@@ -156,7 +156,7 @@ class LoginController extends BaseController
             ->with('message', [
                 'type' => 'success',
                 'title' => 'Reset request processed',
-                'text' => '<p>We sent an email to the address provided with instructions on resetting your password. Please check your email.</p>'
+                'body' => '<p>We sent an email to the address provided with instructions on resetting your password. Please check your email.</p>'
             ]);
     }
 
@@ -185,7 +185,7 @@ class LoginController extends BaseController
                 ->with('message', [
                     'type' => 'error',
                     'title' => 'Reset code does not match',
-                    'text' => '<p>We could not locate a reset request with the provided token and code. Please double check the email and try again.</p>'
+                    'body' => '<p>We could not locate a reset request with the provided token and code. Please double check the email and try again.</p>'
                 ]);
         }
 
@@ -196,7 +196,7 @@ class LoginController extends BaseController
                 ->with('message', [
                     'type' => 'error',
                     'title' => 'Username does not match',
-                    'text' => '<p>The user associated with the reset request provided does not match the username provided.</p>'
+                    'body' => '<p>The user associated with the reset request provided does not match the username provided.</p>'
                 ]);
         }
 
@@ -217,7 +217,7 @@ class LoginController extends BaseController
         return redirect('/login')
             ->with('message', [
                 'title' => 'User information updated',
-                'text' => '<p>Your account information was updated successfully, please sign in.</p>'
+                'body' => '<p>Your account information was updated successfully, please sign in.</p>'
             ]);
     }
 

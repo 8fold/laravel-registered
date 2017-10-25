@@ -19,30 +19,27 @@ class ProfileController extends BaseController
 
     public function index(Request $request, $username)
     {
-        $isProfileArea = false;
-        if (Auth::user()) {
-            $trimmedProfilePath = trim(Auth::user()->registration->profilePath, '/');
-            $allSubPaths = trim(Auth::user()->registration->profilePath, '/') .'/*';
-            if(is_active([$trimmedProfilePath, $allSubPaths])) {
-                $isProfileArea = true;
-
-            }
-        }
         $message = (session('message'))
             ? session('message')
             : null;
 
-        $canEdit = false;
-        if (Auth::user() && Auth::user()->username == $username) {
-            $canEdit = true;
-        }
+        $isProfileArea = UserRegistration::isProfileArea();
+        $isMyProfile = ($isProfileArea)
+            ? UserRegistration::isMyProfile($username)
+            : null;
 
         $user = UserRegistration::withUsername($username)->first()->user;
         return view('registered::account-profile.profile')
             ->with('message', $message)
             ->with('user', $user)
-            ->with('canEdit', $canEdit)
-            ->with('isProfileArea', $isProfileArea);
+            ->with('isMyProfile', $isMyProfile)
+            ->with('isProfileArea', $isProfileArea)
+            ->with('page_title', pagetitle([
+                $user->displayName,
+                'Practitioners',
+                '8fold Professionals'
+                ])->get()
+            );
     }
 
     public function showEditProfile($username)
@@ -75,7 +72,7 @@ class ProfileController extends BaseController
         $message = [
             'type' => 'success',
             'title' => 'Profile updated successfully',
-            'text' => '<p>You&rsquo;re profile information was updated successfully.</p>'
+            'body' => '<p>You&rsquo;re profile information was updated successfully.</p>'
         ];
 
         return redirect($registration->editProfilePath)
@@ -118,21 +115,21 @@ class ProfileController extends BaseController
                 ->with('message', [
                     'type' => 'warning',
                     'title' => 'Incorrect user',
-                    'text' => '<p>The user given is not the one associated with the token. Please try again.</p>'
+                    'body' => '<p>The user given is not the one associated with the token. Please try again.</p>'
                 ]);
 
         } elseif (!$unconfirmed) {
             return redirect('/login')
                 ->with('message', [
                     'title' => 'Already confirmed',
-                    'text' => '<p>You have already been confired, please login instead.</p>'
+                    'body' => '<p>You have already been confired, please login instead.</p>'
                 ]);
         }
         return redirect('/')
             ->with('message', [
                     'type' => 'warning',
                     'title' => 'Unexpected error',
-                    'text' => '<p>Yep, I&rsquo;m just as confused as you are. Please try that again.</p>'
+                    'body' => '<p>Yep, I&rsquo;m just as confused as you are. Please try that again.</p>'
                 ]);
     }
 
@@ -150,7 +147,7 @@ class ProfileController extends BaseController
             return view('registered::workflow-registration.establish-password')
                 ->with('message', [
                     'title' => 'Almost done!',
-                    'text' => '<p>Now all you need to do is tell us what you want your password to be.</p>'
+                    'body' => '<p>Now all you need to do is tell us what you want your password to be.</p>'
                 ]);
         }
         return $check;

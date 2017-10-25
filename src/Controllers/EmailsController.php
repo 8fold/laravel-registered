@@ -20,7 +20,7 @@ class EmailsController extends BaseController
         $message = [
             'type' => 'success',
             'title' => 'Successfully added email address',
-            'text' => '<p>Your email address was added.</p>'
+            'body' => '<p>Your email address was added.</p>'
         ];
         return back()
             ->with('message', $message);
@@ -44,7 +44,7 @@ class EmailsController extends BaseController
             ->with('message', [
                 'type' => 'success',
                 'title' => 'Default address changed',
-                'text' => '<p>The default email address for your account was updated.</p>'
+                'body' => '<p>The default email address for your account was updated.</p>'
             ]);
     }
 

@@ -28,7 +28,7 @@ class AccountController extends BaseController
                 ->with('message', [
                     'type' => 'warning',
                     'title' => 'Incorrect current password',
-                    'text' => '<p>The current password supplied does not match the password your account.</p>'
+                    'body' => '<p>The current password supplied does not match the password your account.</p>'
                 ]);
         }
 
@@ -38,7 +38,7 @@ class AccountController extends BaseController
             ->with('message', [
                 'type' => 'success',
                 'title' => 'Password changed',
-                'text' => '<p>Your password has been updated successfully.</p>'
+                'body' => '<p>Your password has been updated successfully.</p>'
             ]);
     }
 
@@ -58,7 +58,7 @@ class AccountController extends BaseController
                 ->with('message', [
                     'type' => 'error',
                     'title' => 'Not authorized',
-                    'text' => '<p>Could not complete your request.</p>'
+                    'body' => '<p>Could not complete your request.</p>'
                 ]);
         }
 
@@ -70,7 +70,7 @@ class AccountController extends BaseController
             ->with('message', [
                 'type' => 'success',
                 'title' => 'User types updates successfully.',
-                'text' => '<p>The user types for '. $registration->displayName .' were successfully updated. Please look at their record and verify.</p>'
+                'body' => '<p>The user types for '. $registration->displayName .' were successfully updated. Please look at their record and verify.</p>'
             ]);
     }
 }

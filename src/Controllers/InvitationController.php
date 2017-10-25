@@ -74,7 +74,7 @@ class InvitationController extends BaseController
                 ->with('message', [
                         'type' => 'warning',
                         'title' => 'Invitation could not be found',
-                        'text' => 'Either I could not locate the invitation or I could not locate the associated sender of the invitation. Please try again.'
+                        'body' => 'Either I could not locate the invitation or I could not locate the associated sender of the invitation. Please try again.'
                     ]);
         }
 

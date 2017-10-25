@@ -28,7 +28,7 @@ class RedirectIfNotMe
                 ->with('message', [
                     'type' => 'warning',
                     'title' => 'Not authorized',
-                    'text' => 'You are not authorized for this area or action.'
+                    'body' => 'You are not authorized for this area or action.'
                 ]);
         }
 

@@ -1,3 +1,5 @@
+NOTE: I have temporarily stopped maintaining the views in this package as it is still in serious beta-mode; however, I plan to update them as new methods of handling the presentation layer present themselves.
+
 # Registered for Laravel 5.5+ by 8fold
 
 [Laravel](https://laravel.com) comes with its own registration scaffold, which can work for most projects; Registered takes it farther and takes advantage of some of modern registration user experience patterns including:
