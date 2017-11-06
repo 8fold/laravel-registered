@@ -111,7 +111,10 @@ if (!\App::runningUnitTests()) {
             ], function() use ($prefix) {
             $profileController = Eightfold\Registered\Controllers\ProfileController::class;
 
-            Route::get('/', $profileController.'@index');
+            Route::get('/',
+                Eightfold\Registered\Controllers\UsersShowViewController::class .
+                '@show');
+
             Route::get('/confirm', $profileController.'@confirm')
                 ->name($prefix .'.confirmaiton');
             Route::get('/set-password', $profileController.'@showEstablishPasswordForm')

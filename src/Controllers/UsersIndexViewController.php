@@ -18,6 +18,7 @@ use Eightfold\Html\Html;
 use Eightfold\Html\Elements\Grouping\Ul;
 use Eightfold\Html\Elements\Grouping\Figure;
 use Eightfold\UIKit\UIKit;
+use Eightfold\UIKit\Simple\UserCard;
 
 class UsersIndexViewController extends BaseController
 {
@@ -62,22 +63,28 @@ class UsersIndexViewController extends BaseController
         return Html::ul($registrationLinks);
     }
 
-    private function getAvatarFigure(UserRegistration $userRegistration): Figure
+    /**
+     * @todo Should pobably move this to the kit.
+     *
+     * @param  UserRegistration $userRegistration [description]
+     * @return [type]                             [description]
+     */
+    protected function getAvatarFigure(UserRegistration $userRegistration): UserCard
     {
         $avatar = optional($userRegistration->user->profile)->avatar;
-        $exists = (!is_null($avatar) && file_exists(public_path($avatar)));
-        $src = ($exists)
-            ? 'src '. url(substr($avatar, 1))
-            : 'src '. url('img/logo-jewel.svg');
-        $alt = ($exists)
-            ? 'alt Profile picture of '. $userRegistration->displayName
-            : 'alt Placeholder for profile picture of '. $userRegistration->displayName;
+        $src = '';
+        if ( ! is_null($avatar) && file_exists(public_path($avatar))) {
+            $src = url(substr($avatar, 1));
 
-        // ef_image(['alt', 'src'])
-        // ef_user_card(['alt', 'src'])->attr('class ef-radial-figure')
-        return Html::figure(
-            Html::img(false)->attr($src, $alt)
-        )->attr('class ef-radial-figure');
+        } else {
+            $src = url('img/logo-jewel.svg');
+
+        }
+
+        return UIKit::ef_user_card([
+            'Picture of '. $userRegistration->displayName,
+            url($src)
+        ]);
     }
 
     private function isInvisibleUserType(Request $request): bool

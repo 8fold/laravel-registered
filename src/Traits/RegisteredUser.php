@@ -25,18 +25,32 @@ trait RegisteredUser
         return $this->hasOne(UserRegistration::class, 'user_id');
     }
 
-    public function getIsSiteOwnerAttribute()
+    public function getIsSiteOwnerAttribute(): bool
     {
         return $this->registration->hasType('owners');
     }
 
-    public function isSiteOwner($string = false)
+    public function isMe(string $username): bool
+    {
+        return ($this->username == $username);
+    }
+
+    public function isMyProfile(string $username): bool
+    {
+        $isMyProfile = false;
+        if (Auth::user() && Auth::user()->username == $username) {
+            $isMyProfile = true;
+        }
+        return $isMyProfile;
+    }
+
+    public function isSiteOwner($string = false): bool
     {
         // Only people strictly assigned as Owner will be.
         return $this->isSiteOwner;
     }
 
-    public function isUser($strict = false)
+    public function isUser($strict = false): bool
     {
         $s = ($this->userTypeSlug == 'users');
         if ($strict) {
@@ -46,7 +60,7 @@ trait RegisteredUser
         return true;
     }
 
-    public function getIsUserAttribute()
+    public function getIsUserAttribute(): bool
     {
         return $this->isUser();
     }

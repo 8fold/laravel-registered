@@ -86,14 +86,14 @@ class UserRegistration extends Model
         return $registration;
     }
 
-    static public function isMyProfile(string $username): bool
-    {
-        $isMyProfile = false;
-        if (Auth::user() && Auth::user()->username == $username) {
-            $isMyProfile = true;
-        }
-        return $isMyProfile;
-    }
+    // static public function isMyProfile(string $username): bool
+    // {
+    //     $isMyProfile = false;
+    //     if (Auth::user() && Auth::user()->username == $username) {
+    //         $isMyProfile = true;
+    //     }
+    //     return $isMyProfile;
+    // }
 
     /**
      * Check whether the application has a user registered as the owner.

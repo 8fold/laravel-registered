@@ -1,3 +1,4 @@
+{{-- This is in the wrong place; or, not used at all. --}}
 <div class="ef-grid-full">
     <form action="{{ route('profiled.add-user-type') }}" method="POST">
         {!! UIKit::textInput([
