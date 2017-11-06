@@ -65,10 +65,11 @@ if (!\App::runningUnitTests()) {
         Route::group([
             'middleware' => ['web'],
             'prefix' => $prefix
-        ], function() use ($usersController) {
+        ], function() {
 
-
-            Route::get('/', $usersController.'@index');
+            Route::get('/',
+                Eightfold\Registered\Controllers\UsersIndexViewController::class .
+                '@index');
         });
 
         // Managing emails.

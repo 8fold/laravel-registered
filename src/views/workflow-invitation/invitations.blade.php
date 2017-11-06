@@ -1,6 +1,6 @@
-@extends('registered::layouts.app')
+@extends('registered::layouts.app', ['page_title' => '8fold Professionals'])
 
-@section('content')
+@section('main')
 <article class="ef-grid">
     <section class="ef-content">
         <h1>Invitations</h1>
@@ -8,7 +8,7 @@
         @if ($canInvite)
         <form role="form" method="POST" action="{{ Request::url() }}">
             {{ csrf_field() }}
-            {!! UIKit::textInput([
+            {!! UIKit::textinput([
                 'type' => 'email',
                 'label' => trans('registered::members.email_address'),
                 'name' => 'email',
@@ -16,19 +16,19 @@
                 'error' => ($errors->has('email')) ? $errors->first('email') : ''
             ]) !!}
             @if (Auth::user()->canChangeUserTypes)
-            {!! UIKit::select([
+            {!! UIKit::formselect([
                 'label' => 'Select type of user',
                 'name' => 'user_type',
-                'options' => $userTypeOptions,
-                'selected' => 'users'
+                'options' => [$userTypeOptions],
+                'selected' => ['users']
             ]) !!}
             @else
-            {!! UIKit::hiddenInput([
+            {!! UIKit::hiddeninput([
                 'name' => 'user_type',
                 'value' => 'users'
             ]) !!}
             @endif
-            {!! UIKit::button([
+            {!! UIKit::formbutton([
                 'label' => trans('registered::members.invite_member')
             ]) !!}
         </form>
@@ -51,16 +51,16 @@
             {!! UIKit::select([
                 'label' => 'Select type of user',
                 'name' => 'user_type',
-                'options' => $userTypeOptions,
+                'options' => [$userTypeOptions],
                 'selected' => 'users'
             ]) !!}
             @else
-            {!! UIKit::hiddenInput([
+            {!! UIKit::hiddeninput([
                 'name' => 'user_type',
                 'value' => 'users'
             ]) !!}
             @endif
-            {!! UIKit::button([
+            {!! UIKit::formbutton([
                 'label' => trans('registered::members.invite_member')
             ]) !!}
         </form>
@@ -77,7 +77,7 @@
                 <p>
                 <form role="form" method="POST" action="{{ Request::url() }}/{{ $invitation->public_key }}">
                     {{ csrf_field() }}
-                    {!! UIKit::button([
+                    {!! UIKit::formbutton([
                         'label' => 'Send again'
                     ]) !!}
                 </form>
