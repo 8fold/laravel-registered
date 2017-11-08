@@ -1,5 +1,9 @@
 <?php
 
+use Eightfold\Registered\Controllers\RegisterCreateViewController;
+
+use Eightfold\Registered\Controllers\LoginViewController;
+
 Route::group([
         'prefix' => 'invitations',
         'middleware' => ['web', 'auth']
@@ -16,8 +20,11 @@ Route::group([
     ], function() {
     $registerController = Eightfold\Registered\Controllers\RegisterController::class;
 
-    Route::get('register', $registerController.'@showRegistrationForm')
+    Route::get('register', RegisterCreateViewController::class .'@create')
         ->name('register');
+
+
+
     Route::post('register', $registerController.'@register');
     Route::get('registered', $registerController.'@registered');
     Route::post('/register/request-invite', $registerController.'@requestInvite');
@@ -29,7 +36,7 @@ Route::group([
     $loginController = Eightfold\Registered\Controllers\LoginController::class;
 
     // Login
-    Route::get('login', $loginController.'@showLoginForm')
+    Route::get('login', LoginViewController::class .'@index')
         ->name('login');
     Route::post('login', $loginController.'@login');
 
