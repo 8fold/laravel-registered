@@ -115,7 +115,8 @@ if (!\App::runningUnitTests()) {
             $accountController = Eightfold\Registered\Controllers\AccountController::class;
 
             Route::get('/', AccountEditViewController::class .'@index');
-            Route::post('/update-password', $accountController.'@updatePassword');
+
+            Route::post('/update-password', PasswordController::class .'@update');
         });
 
         // Managing type.

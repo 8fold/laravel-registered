@@ -5,6 +5,7 @@ namespace Eightfold\Registered\Controllers;
 use Eightfold\Registered\Controllers\BaseController;
 
 use Auth;
+use Hash;
 use Mail;
 use Validator;
 use Illuminate\Http\Request;
@@ -21,6 +22,39 @@ use Eightfold\LaravelUIKit\UIKit as LaravelUI;
 
 class PasswordController extends BaseController
 {
+    public function update($username, Request $request)
+    {
+        $this->validatePassword($request->all())->validate();
+
+        $current = Auth::user()->password;
+        if (!Hash::check($request->current_password, $current)) {
+            $alert = UIKit::alert([
+                'Incorrect current password',
+                'The current password supplied does not match the password your account.'
+            ])->warning();
+
+        } else {
+            $alert = UIKit::alert([
+                'Password changed',
+                'Your password has been updated successfully.'
+            ])->success();
+
+            Auth::user()->password = $request->new_password;
+            Auth::user()->save();
+
+        }
+        return back()->with('message', $alert);
+    }
+
+    private function validatePassword(array $data)
+    {
+        return Validator::make($data, [
+            'current_password' => 'required',
+            'new_password' => 'required',
+            'confirm_password' => 'required|same:new_password'
+        ]);
+    }
+
     public function forgot(Request $request)
     {
         $this->validateEmailAddress($request->all())->validate();

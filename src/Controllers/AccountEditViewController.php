@@ -51,15 +51,18 @@ class AccountEditViewController extends BaseController
                 LaravelUI::ef_text_input([
                     'Current password',
                     'current_password'
-                ]),
+                ])->password(),
+
                 LaravelUI::ef_text_input([
                     'New password',
                     'new_password'
-                ])->attr('type password'),
+                ])->password(),
+
                 LaravelUI::ef_text_input([
                     'Confirm new password',
                     'confirm_password'
-                ])->attr('type password'),
+                ])->password(),
+
                 LaravelUI::csrf_field(),
                 UIKit::ef_button('Update password')
             ])->attr(

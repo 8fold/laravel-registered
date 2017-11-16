@@ -5,6 +5,8 @@ namespace Eightfold\Registered\Middlewares;
 use Closure;
 use Auth;
 
+use Eightfold\UIKit\UIKit;
+
 class RedirectIfNotMe
 {
     /**
@@ -24,12 +26,12 @@ class RedirectIfNotMe
 
         if ($requestUsername !== $myUsername) {
             $target = Auth::user()->registration->profilePath;
+            $alert = UIKit::alert([
+                'Not authorized',
+                'You are not authorized for this area or action.'
+            ]);
             return redirect($target)
-                ->with('message', [
-                    'type' => 'warning',
-                    'title' => 'Not authorized',
-                    'body' => 'You are not authorized for this area or action.'
-                ]);
+                ->with('message', $alert);
         }
 
         return $next($request);
