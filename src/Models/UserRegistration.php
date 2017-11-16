@@ -86,15 +86,6 @@ class UserRegistration extends Model
         return $registration;
     }
 
-    // static public function isMyProfile(string $username): bool
-    // {
-    //     $isMyProfile = false;
-    //     if (Auth::user() && Auth::user()->username == $username) {
-    //         $isMyProfile = true;
-    //     }
-    //     return $isMyProfile;
-    // }
-
     /**
      * Check whether the application has a user registered as the owner.
      *
@@ -243,7 +234,7 @@ class UserRegistration extends Model
         return $this->hasOne(UserInvitation::class);
     }
 
-    public function passwordReset(): UserPasswordReset
+    public function passwordReset(): HasOne
     {
         return $this->hasOne(UserPasswordReset::class, 'user_registration_id');
     }
@@ -474,6 +465,13 @@ class UserRegistration extends Model
 
 
     /** Scopes */
+    public function scopeWithUsername(Builder $query, string $username): Builder
+    {
+        return $query->whereHas('user', function ($query) use ($username) {
+            return $query->where('username', $username);
+        });
+    }
+
     public function scopeWithType(Builder $query, string $typeSlug): Builder
     {
         return $query->whereHas('types', function ($query) use ($typeSlug) {

@@ -15,37 +15,37 @@ use Eightfold\Registered\Models\UserEmailAddress;
 
 class InvitationController extends BaseController
 {
-    public function index()
-    {
-        $registration = Auth::user()->registration;
-        $inviteCountString = '';
-        $canInvite = true;
-        if ($registration->user->isSiteOwner()) {
-            $inviteCountString = 'You can send an unlimited number of invitations.';
+    // public function index()
+    // {
+    //     $registration = Auth::user()->registration;
+    //     $inviteCountString = '';
+    //     $canInvite = true;
+    //     if ($registration->user->isSiteOwner()) {
+    //         $inviteCountString = 'You can send an unlimited number of invitations.';
 
-        } else {
-            $invitationsMax = 0;
-            $invitationsSent = $registration->sentInvitations->count();
-            $remainingInvitations = $invitationsMax - $invitationsSent;
+    //     } else {
+    //         $invitationsMax = 0;
+    //         $invitationsSent = $registration->sentInvitations->count();
+    //         $remainingInvitations = $invitationsMax - $invitationsSent;
 
-            $inviteCountString = 'You have <b>'. $remainingInvitations .'</b> of <b>'. $invitationsMax .' available.</b>';
-            $canInvite = ($remainingInvitations > 0) ? true : false;
+    //         $inviteCountString = 'You have <b>'. $remainingInvitations .'</b> of <b>'. $invitationsMax .' available.</b>';
+    //         $canInvite = ($remainingInvitations > 0) ? true : false;
 
-        }
+    //     }
 
-        $requests = UserInvitationRequest::unsentInvitationRequests();
-        $unclaimed = $registration->unclaimedInvitations;
-        $claimed = $registration->claimedInvitations;
-        $userTypeOptions = UserType::selectOptions();
+    //     $requests = UserInvitationRequest::unsentInvitationRequests();
+    //     $unclaimed = $registration->unclaimedInvitations;
+    //     $claimed = $registration->claimedInvitations;
+    //     $userTypeOptions = UserType::selectOptions();
 
-        return view('registered::workflow-invitation.invitations')
-            ->with('inviteCountString', $inviteCountString)
-            ->with('requests', $requests)
-            ->with('unclaimedInvitations', $unclaimed)
-            ->with('claimedInvitations', $claimed)
-            ->with('canInvite', $canInvite)
-            ->with('userTypeOptions', $userTypeOptions);
-    }
+    //     return view('registered::workflow-invitation.invitations')
+    //         ->with('inviteCountString', $inviteCountString)
+    //         ->with('requests', $requests)
+    //         ->with('unclaimedInvitations', $unclaimed)
+    //         ->with('claimedInvitations', $claimed)
+    //         ->with('canInvite', $canInvite)
+    //         ->with('userTypeOptions', $userTypeOptions);
+    // }
 
     public function sendInvite(Request $request)
     {

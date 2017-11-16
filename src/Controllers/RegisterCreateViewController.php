@@ -5,31 +5,18 @@ namespace Eightfold\Registered\Controllers;
 use Eightfold\Registered\Controllers\BaseController;
 
 use Auth;
-use Validator;
-use Session;
+
 use Illuminate\Http\Request;
-use Illuminate\Http\RedirectResponse;
-
-use Carbon\Carbon;
-
 use Illuminate\Foundation\Auth\RegistersUsers;
 
 use Eightfold\Registered\Models\UserInvitation;
-use Eightfold\Registered\Models\UserEmailAddress;
+
 use Eightfold\Registered\Models\UserRegistration;
-use Eightfold\Registered\Models\UserInvitationRequest;
-use Eightfold\Registered\Models\UserType;
 
-use Eightfold\Registered\Classes\PatreonUser;
-
-use Patreon\API;
-use Patreon\OAuth;
-
-use Eightfold\Html\Html;
 use Eightfold\UIKit\UIKit;
 use Eightfold\LaravelUIKit\UIKit as LaravelUI;
 use Eightfold\LaravelUIKit\FormControls\InputText;
-use Eightfold\Html\Elements\Forms\Form;
+use Eightfold\LaravelUIKit\Forms\Form;
 
 class RegisterCreateViewController extends BaseController
 {
@@ -99,28 +86,37 @@ class RegisterCreateViewController extends BaseController
 
     private function invitationRequestForm()
     {
-        return Html::form([
-                $this->formEmailInput(),
-                LaravelUI::csrf_field(),
+        $email = $this->formEmailInput();
+
+        return LaravelUI::ef_form([
+                'post '. url('/register/request-invite'),
+                [
+                    $email
+                ],
                 UIKit::ef_button(trans('registered::registration.register'))
-            ])->attr('action '.  url('/register/request-invite'));
+            ]);
     }
 
     private function registrationForm()
     {
-        return Html::form([
-                LaravelUI::csrf_field(),
-                $this->formEmailInput(),
-                LaravelUI::ef_text_input([
-                    trans('registered::registration.username'),
-                    'username',
-                    '',
-                    'johnsmith'
-                ])->hint(trans('registered::registration.username_hint')),
-                $this->formInvitationTokenInput(),
-                $this->formTosConfirmationSelect(),
+        $email = $this->formEmailInput();
+        $inviteToken = $this->formInvitationTokenInput();
+        $confirmSelect = $this->formTosConfirmationSelect();
+        return LaravelUI::ef_form([
+                'post '. url('/register'),
+                [
+                    $email,
+                    LaravelUI::ef_text_input([
+                        trans('registered::registration.username'),
+                        'username',
+                        '',
+                        'johnsmith'
+                    ])->hint(trans('registered::registration.username_hint')),
+                    $inviteToken,
+                    $confirmSelect
+                ],
                 UIKit::ef_button(trans('registered::registration.register'))
-            ])->attr('action '.  url('/register'));
+            ]);
     }
 
     private function formEmailInput()

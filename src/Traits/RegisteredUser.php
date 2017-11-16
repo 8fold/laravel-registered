@@ -2,6 +2,7 @@
 
 namespace Eightfold\Registered\Traits;
 
+use Auth;
 use Hash;
 use Validator;
 

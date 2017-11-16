@@ -21,11 +21,6 @@ class UserType extends Model
         'slug', 'display'
     ];
 
-    static public function selectOptions()
-    {
-        return UserType::all()->pluck('display', 'slug');
-    }
-
     static public function userTypesForRoutes()
     {
         if (Schema::hasTable('user_types')) {

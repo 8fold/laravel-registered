@@ -38,7 +38,8 @@ class UsersIndexViewController extends BaseController
             Html::article($registrationLinks)
         )->attr('class ef-users-list ef-content');
 
-        return view('registered::type-homes.users-home')
+        return view('main')
+            ->with('page_title', 'Practitioners | 8fold Professionals')
             ->with('main', $main);
     }
 

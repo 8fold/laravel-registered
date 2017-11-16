@@ -17,36 +17,36 @@ class ProfileController extends BaseController
 {
     use RegistersUsers;
 
-    public function index(Request $request, $username)
-    {
-        $message = (session('message'))
-            ? session('message')
-            : null;
+    // public function index(Request $request, $username)
+    // {
+    //     $message = (session('message'))
+    //         ? session('message')
+    //         : null;
 
-        $isProfileArea = UserRegistration::isProfileArea();
-        $isMyProfile = ($isProfileArea)
-            ? UserRegistration::isMyProfile($username)
-            : null;
+    //     $isProfileArea = UserRegistration::isProfileArea();
+    //     $isMyProfile = ($isProfileArea)
+    //         ? UserRegistration::isMyProfile($username)
+    //         : null;
 
-        $user = UserRegistration::withUsername($username)->first()->user;
-        return view('registered::account-profile.profile')
-            ->with('message', $message)
-            ->with('user', $user)
-            ->with('isMyProfile', $isMyProfile)
-            ->with('isProfileArea', $isProfileArea)
-            ->with('page_title', pagetitle([
-                $user->displayName,
-                'Practitioners',
-                '8fold Professionals'
-                ])->get()
-            );
-    }
+    //     $user = UserRegistration::withUsername($username)->first()->user;
+    //     return view('registered::account-profile.profile')
+    //         ->with('message', $message)
+    //         ->with('user', $user)
+    //         ->with('isMyProfile', $isMyProfile)
+    //         ->with('isProfileArea', $isProfileArea)
+    //         ->with('page_title', pagetitle([
+    //             $user->displayName,
+    //             'Practitioners',
+    //             '8fold Professionals'
+    //             ])->get()
+    //         );
+    // }
 
-    public function showEditProfile($username)
-    {
-        return view('registered::account-profile.profile-edit')
-            ->with('user', Auth::user());
-    }
+    // public function showEditProfile($username)
+    // {
+    //     return view('registered::account-profile.profile-edit')
+    //         ->with('user', Auth::user());
+    // }
 
     public function updateProfileInformation($username, Request $request)
     {
@@ -98,40 +98,40 @@ class ProfileController extends BaseController
         return $check;
     }
 
-    private function didPassSanityCheck(Request $request, string $username, bool $skipConfirmationCheck = true)
-    {
-        $registration = UserRegistration::withToken($request->token)->first();
-        $usernamesMatch = ($registration->user->username == $username);
-        $unconfirmed = is_null($registration->confirmed_on);
+    // private function didPassSanityCheck(Request $request, string $username, bool $skipConfirmationCheck = true)
+    // {
+    //     $registration = UserRegistration::withToken($request->token)->first();
+    //     $usernamesMatch = ($registration->user->username == $username);
+    //     $unconfirmed = is_null($registration->confirmed_on);
 
-        if ($usernamesMatch && $skipConfirmationCheck) {
-            return true;
+    //     if ($usernamesMatch && $skipConfirmationCheck) {
+    //         return true;
 
-        } elseif ($usernamesMatch && $unconfirmed && !$skipConfirmationCheck) {
-            return true;
+    //     } elseif ($usernamesMatch && $unconfirmed && !$skipConfirmationCheck) {
+    //         return true;
 
-        } elseif (!$usernamesMatch) {
-            return redirect('/')
-                ->with('message', [
-                    'type' => 'warning',
-                    'title' => 'Incorrect user',
-                    'body' => '<p>The user given is not the one associated with the token. Please try again.</p>'
-                ]);
+    //     } elseif (!$usernamesMatch) {
+    //         return redirect('/')
+    //             ->with('message', [
+    //                 'type' => 'warning',
+    //                 'title' => 'Incorrect user',
+    //                 'body' => '<p>The user given is not the one associated with the token. Please try again.</p>'
+    //             ]);
 
-        } elseif (!$unconfirmed) {
-            return redirect('/login')
-                ->with('message', [
-                    'title' => 'Already confirmed',
-                    'body' => '<p>You have already been confired, please login instead.</p>'
-                ]);
-        }
-        return redirect('/')
-            ->with('message', [
-                    'type' => 'warning',
-                    'title' => 'Unexpected error',
-                    'body' => '<p>Yep, I&rsquo;m just as confused as you are. Please try that again.</p>'
-                ]);
-    }
+    //     } elseif (!$unconfirmed) {
+    //         return redirect('/login')
+    //             ->with('message', [
+    //                 'title' => 'Already confirmed',
+    //                 'body' => '<p>You have already been confired, please login instead.</p>'
+    //             ]);
+    //     }
+    //     return redirect('/')
+    //         ->with('message', [
+    //                 'type' => 'warning',
+    //                 'title' => 'Unexpected error',
+    //                 'body' => '<p>Yep, I&rsquo;m just as confused as you are. Please try that again.</p>'
+    //             ]);
+    // }
 
     /**
      * Allow user to set their password.

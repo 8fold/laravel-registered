@@ -34,7 +34,7 @@ class LoginViewController extends BaseController
             ])->attr('type password'),
             LaravelUI::csrf_field(),
             UIKit::ef_button(trans('registered::registration.sign_in'))
-        ])->attr('action '. url('/login'));
+        ])->attr('action '. url('/login'), 'method post');
 
         return view('main')
             ->with('page_title', $pageTitle)
