@@ -10,7 +10,7 @@ use Eightfold\Registered\RegisteredServiceProvider;
 
 use Eightfold\Registered\Models\UserType;
 use Eightfold\Registered\Models\UserInvitation;
-use Eightfold\Registered\Models\UserRegistration;
+use Eightfold\Registered\Registration\UserRegistration;
 
 abstract class TestCase extends BaseTestCase
 {
