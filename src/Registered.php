@@ -11,7 +11,7 @@ use Eightfold\Registered\Framework\Middlewares\RedirectIfNotMe;
 
 use Eightfold\Registered\Models\UserType;
 
-class ServiceProvider extends LaravelServiceProvider
+class Registered extends LaravelServiceProvider
 {
     /**
      * Bootstrap the application services.
