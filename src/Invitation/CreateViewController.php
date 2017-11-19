@@ -1,22 +1,23 @@
 <?php
 
-namespace Eightfold\Registered\Controllers;
+namespace Eightfold\Registered\Invitation;
 
-use Eightfold\Registered\Controllers\BaseController;
+use Eightfold\Registered\ControllerBase;
 
 use Auth;
 use Illuminate\Http\Request;
 
-use Eightfold\Registered\Models\UserInvitation;
-use Eightfold\Registered\Models\UserInvitationRequest;
-use Eightfold\Registered\Models\UserType;
-use Eightfold\Registered\Models\UserEmailAddress;
+use Eightfold\Registered\Invitation\UserInvitation;
+use Eightfold\Registered\Invitation\UserInvitationRequest;
+
+use Eightfold\Registered\UserType\UserType;
+use Eightfold\Registered\EmailAddress\UserEmailAddress;
 
 use Eightfold\Html\Html;
 use Eightfold\UIKit\UIKit;
 use Eightfold\LaravelUIKit\UIKit as LaravelUI;
 
-class InvitationCreateViewController extends BaseController
+class CreateViewController extends ControllerBase
 {
     public function index()
     {
@@ -107,8 +108,8 @@ class InvitationCreateViewController extends BaseController
             ])->options(...$options);
         }
 
-        return LaravelUI::ef_form(
-                'post /invitations',
+        return LaravelUI::ef_form([
+                'post '. url('/invitations'),
                 [
                     $userTypeSelect,
                     LaravelUI::ef_text_input([
@@ -119,7 +120,7 @@ class InvitationCreateViewController extends BaseController
                     ])
                 ],
                 UIKit::ef_button(trans('registered::members.invite_member'))
-            );
+            ]);
     }
 
     private function unclaimedInvitations(array $invitations)

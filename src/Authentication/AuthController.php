@@ -18,8 +18,8 @@ use Eightfold\Registered\Mail\UserResetEmailWarn;
 
 use Socialite;
 
-use Eightfold\Registered\Models\UserEmailAddress;
-use Eightfold\Registered\Models\UserPasswordReset;
+use Eightfold\Registered\EmailAddress\UserEmailAddress;
+use Eightfold\Registered\Authentication\UserPasswordReset;
 use Eightfold\Registered\Registration\UserRegistration;
 
 class AuthController extends ControllerBase

@@ -1,55 +1,29 @@
 <?php
 
-namespace Eightfold\Registered\Controllers;
+namespace Eightfold\Registered\Invitation;
 
-use Eightfold\Registered\Controllers\BaseController;
+use Eightfold\Registered\ControllerBase;
 
 use Auth;
 use Validator;
 use Illuminate\Http\Request;
 
-use Eightfold\Registered\Models\UserInvitation;
-use Eightfold\Registered\Models\UserInvitationRequest;
-use Eightfold\Registered\Models\UserType;
-use Eightfold\Registered\Models\UserEmailAddress;
+use Eightfold\Registered\Invitation\UserInvitation;
+use Eightfold\Registered\Invitation\UserInvitationRequest;
 
-class InvitationController extends BaseController
+use Eightfold\Registered\UserType\UserType;
+
+use Eightfold\Registered\EmailAddress\UserEmailAddress;
+
+Use Eightfold\UIKit\UIKit;
+
+class ResourceController extends ControllerBase
 {
-    // public function index()
-    // {
-    //     $registration = Auth::user()->registration;
-    //     $inviteCountString = '';
-    //     $canInvite = true;
-    //     if ($registration->user->isSiteOwner()) {
-    //         $inviteCountString = 'You can send an unlimited number of invitations.';
-
-    //     } else {
-    //         $invitationsMax = 0;
-    //         $invitationsSent = $registration->sentInvitations->count();
-    //         $remainingInvitations = $invitationsMax - $invitationsSent;
-
-    //         $inviteCountString = 'You have <b>'. $remainingInvitations .'</b> of <b>'. $invitationsMax .' available.</b>';
-    //         $canInvite = ($remainingInvitations > 0) ? true : false;
-
-    //     }
-
-    //     $requests = UserInvitationRequest::unsentInvitationRequests();
-    //     $unclaimed = $registration->unclaimedInvitations;
-    //     $claimed = $registration->claimedInvitations;
-    //     $userTypeOptions = UserType::selectOptions();
-
-    //     return view('registered::workflow-invitation.invitations')
-    //         ->with('inviteCountString', $inviteCountString)
-    //         ->with('requests', $requests)
-    //         ->with('unclaimedInvitations', $unclaimed)
-    //         ->with('claimedInvitations', $claimed)
-    //         ->with('canInvite', $canInvite)
-    //         ->with('userTypeOptions', $userTypeOptions);
-    // }
-
-    public function sendInvite(Request $request)
+    public function send(Request $request)
     {
-        $this->validator($request->all())->validate();
+        Validator::make($request->all(), ['email' => UserEmailAddress::validation()])
+            ->validate();
+
         $email = $request->email;
 
         $slug = $request->user_type;
@@ -59,23 +33,24 @@ class InvitationController extends BaseController
 
         UserInvitation::invite($email, $type, $registration);
 
-        return redirect('invitations')
-            ->with('message', [
-                    'type' => 'success',
-                    'title' => 'Invitation sent!'
-                ]);
+        $alert = UIKit::alert([
+            'Invitation sent!',
+            'The invitation has been sent.'
+        ])->success();
+
+        return redirect('invitations')->with('message', $alert);
     }
 
-    public function resendInvite($invitationKey)
+    public function resend($invitationKey)
     {
         $invitation = UserInvitation::withPublicKey($invitationKey)->first();
         if (is_null($invitation)) {
-            return back()
-                ->with('message', [
-                        'type' => 'warning',
-                        'title' => 'Invitation could not be found',
-                        'body' => 'Either I could not locate the invitation or I could not locate the associated sender of the invitation. Please try again.'
-                    ]);
+            $alert = UIKit::alert([
+                'Invitation could not be found',
+                'Either I could not locate the invitation or I could not locate the associated sender of the invitation. Please try again.'
+            ])->warning();
+
+            return back()->with('message', $alert);
         }
 
         UserInvitation::invite(
@@ -84,12 +59,5 @@ class InvitationController extends BaseController
             $invitation->senderRegistration);
 
         return redirect('invitations');
-    }
-
-    private function validator(array $data)
-    {
-        return Validator::make($data, [
-            'email' => UserEmailAddress::validation()
-        ]);
     }
 }

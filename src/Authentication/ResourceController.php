@@ -13,11 +13,11 @@ use Illuminate\Http\Request;
 
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 
-use Eightfold\Registered\Mail\UserResetEmailWarn;
+use Eightfold\Registered\Authentication\ResetWarnMailable;
 
-use Eightfold\Registered\Models\UserEmailAddress;
+use Eightfold\Registered\Authentication\UserPasswordReset;
 use Eightfold\Registered\Registration\UserRegistration;
-use Eightfold\Registered\Models\UserPasswordReset;
+use Eightfold\Registered\EmailAddress\UserEmailAddress;
 
 use Eightfold\Html\Html;
 use Eightfold\UIKit\UIKit;
@@ -171,11 +171,11 @@ class ResourceController extends ControllerBase
         if (!\App::runningUnitTests()) {
             $defaultEmail = $registration->defaultEmail;
             Mail::to($defaultEmail)
-                ->send(new UserResetEmailWarn($registration->user));
+                ->send(new ResetWarnMailable($registration->user));
 
             if ($defaultEmail !== $request->email) {
                 Mail::to($request->email)
-                    ->send(new UserResetEmailWarn($registration->user));
+                    ->send(new ResetWarnMailable($registration->user));
 
             }
         }

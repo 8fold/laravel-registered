@@ -32,6 +32,9 @@ class ServiceProvider extends LaravelServiceProvider
         $useViews = !config('registered.headless.views');
         if ($useViews) {
             $this->loadViewsFrom(__DIR__.'/Registration', 'registration');
+            $this->loadViewsFrom(__DIR__.'/Invitation', 'invitation');
+            $this->loadViewsFrom(__DIR__.'/Authentication', 'authentication');
+
             $this->loadTranslationsFrom(
                 __DIR__.'/Framework/Localizations', 'registered');
 

@@ -18,7 +18,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Collection;
 
-use Eightfold\Registered\Password\UserPasswordReset;
+use Eightfold\Registered\Authentication\UserPasswordReset;
 use Eightfold\Registered\Invitation\UserInvitation;
 use Eightfold\Registered\EmailAddress\UserEmailAddress;
 use Eightfold\Registered\UserType\UserType;

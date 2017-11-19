@@ -13,7 +13,10 @@ use Eightfold\Registered\Profile\ShowViewController as ProfileShowVC;
 use Eightfold\Registered\Profile\UpdateViewController as ProfileUpdateVC;
 
 use Eightfold\Registered\Authentication\AuthController as AuthC;
+use Eightfold\Registered\Authentication\ResourceController as AuthRC;
 use Eightfold\Registered\Authentication\AuthViewController as AuthVC;
+use Eightfold\Registered\Authentication\ForgotViewController as AuthForgotVC;
+use Eightfold\Registered\Authentication\ResetViewController as AuthResetVC;
 
 use Eightfold\Registered\EmailAddress\ResourceController as EmailRC;
 
@@ -21,13 +24,8 @@ use Eightfold\Registered\Profile\ResourceController as ProfileRC;
 
 use Eightfold\Registered\SiteAddress\ResourceController as SiteRC;
 
-use Eightfold\Registered\Controllers\PasswordForgotViewController;
-use Eightfold\Registered\Controllers\PasswordResetViewController;
-
-
-
-use Eightfold\Registered\Controllers\InvitationController;
-use Eightfold\Registered\Controllers\InvitationCreateViewController;
+use Eightfold\Registered\Invitation\CreateViewController as InviteVC;
+use Eightfold\Registered\Invitation\ResourceController as InviteRC;
 
 /**
  * GET  /register - registration form
@@ -45,10 +43,10 @@ Route::group([
         'middleware' => ['web', 'auth']
     ], function() {
 
-    Route::get('/', InvitationCreateViewController::class .'@index');
+    Route::get('/', InviteVC::class .'@index');
 
-    Route::post('/', InvitationController::class .'@sendInvite');
-    Route::post('/{invitation}', InvitationController::class .'@resendInvite');
+    Route::post('/', InviteRC::class .'@send');
+    Route::post('/{invitation}', InviteRC::class .'@resend');
 });
 
 Route::group([
@@ -65,11 +63,11 @@ Route::group([
     // Route::post('/register/request-invite',
     //     RegisterConfirmationViewController::class .'@requestInvite');
 
-    Route::get('/forgot-password', PasswordForgotViewController::class .'@index');
-    Route::post('/forgot-password', PasswordController::class .'@forgot');
+    Route::get('/forgot-password', AuthForgotVC::class);
+    Route::post('/forgot-password', AuthRC::class .'@forgot');
 
-    Route::get('/reset-password', PasswordResetViewController::class .'@index');
-    Route::post('/reset-password', PasswordController::class .'@reset');
+    Route::get('/reset-password', AuthResetVC::class .'@reset');
+    Route::post('/reset-password', AuthRC::class .'@reset');
 
     Route::get('login', AuthVC::class .'@index')
         ->name('login');

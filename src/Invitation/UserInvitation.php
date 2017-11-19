@@ -11,7 +11,7 @@ use Carbon\Carbon;
 
 use Mail;
 
-use Eightfold\Registered\Mail\UserInvited;
+use Eightfold\Registered\Invitation\InvitedMailable;
 
 use Eightfold\Registered\Invitation\UserInvitation;
 use Eightfold\Registered\Invitation\UserInvitationRequest;
@@ -96,7 +96,7 @@ class UserInvitation extends Model
 
         // TODO: Workflow this.
         if (!\App::runningUnitTests()) {
-            Mail::to($invitation->email)->send(new UserInvited($invitation));
+            Mail::to($invitation->email)->send(new InvitedMailable($invitation));
         }
         return $invitation;
     }

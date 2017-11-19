@@ -37,12 +37,10 @@ class ResourceController extends ControllerBase
 
         $invitation = null;
         if ($this->invitationRequiredAndHasToken($request)) {
-            $invitation = UserInvitation::withToken($request->invitation_token)
+            $invitation = UserInvitation::withToken($request->token)
                 ->withCode($request->invite_code)
                 ->first();
-        }
-
-        if ($this->invitationRequiredAndNoToken($request)) {
+        } elseif ($this->invitationRequiredAndNoToken($request)) {
             $alert = UIkit::ef_alert([
                         'No invitation found',
                         'Our site is invitation only and we could not locate an invitation with the information you provided. Please try again.'
@@ -74,7 +72,7 @@ class ResourceController extends ControllerBase
     private function invitationRequiredAndHasToken(Request $request)
     {
         return (config('registered.invitations.required')
-            && !is_null($request->invitation_token));
+            && ! is_null($request->token));
     }
 
     private function invitationRequiredAndNoToken(Request $register)

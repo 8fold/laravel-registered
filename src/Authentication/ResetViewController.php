@@ -1,8 +1,8 @@
 <?php
 
-namespace Eightfold\Registered\Controllers;
+namespace Eightfold\Registered\Authentication;
 
-use Eightfold\Registered\Controllers\BaseController;
+use Eightfold\Registered\ControllerBase;
 
 use Illuminate\Http\Request;
 
@@ -11,9 +11,9 @@ use Eightfold\UIKit\UIKit;
 use Eightfold\LaravelUIKit\UIKit as LaravelUI;
 use Eightfold\LaravelUIKit\Forms\Form;
 
-class PasswordResetViewController extends BaseController
+class ResetViewController extends ControllerBase
 {
-    public function index(Request $request)
+    public function reset(Request $request)
     {
         $header = 'Reset password';
 
@@ -33,7 +33,7 @@ class PasswordResetViewController extends BaseController
 
     private function form(string $token): Form
     {
-        return LaravelUI::ef_form(
+        return LaravelUI::ef_form([
             'post '. url('/reset-password'),
             [
                 LaravelUI::ef_text_input(['Username', 'username']),
@@ -45,6 +45,6 @@ class PasswordResetViewController extends BaseController
                 UIKit::ef_hidden_input(['reset_token', $token])
             ],
             UIKit::button('Update password')
-        );
+        ]);
     }
 }

@@ -51,7 +51,7 @@ class CreateViewController extends ControllerBase
         // $this->inviteRequired = config('registered.invitations.required');
         // $this->inviteRequestable = config('registered.invitations.requestable');
         // $this->siteHasOwner = UserRegistration::hasOwner();
-        // $this->hasTosLink = (strlen(config('registered.tos_url')) > 0);
+        $this->hasTosLink = (strlen(config('registered.tos_url')) > 0);
 
         // TODO: This doesn't appear to be working.
         if (Auth::user()) {
@@ -120,8 +120,11 @@ class CreateViewController extends ControllerBase
         $email = $this->formEmailInput($token);
         $inviteToken = $this->formInvitationTokenInput();
         $confirmSelect = $this->formTosConfirmationSelect();
+        $action = (strlen($token) > 0)
+            ? 'post '. url('/register') .'?token='. $token
+            : 'post '. url('/register');
         return LaravelUI::ef_form([
-                'post '. url('/register'),
+                $action,
                 [
                     $email,
                     LaravelUI::ef_text_input([
@@ -202,10 +205,10 @@ class CreateViewController extends ControllerBase
     {
         $return = '';
         if ($this->hasTosLink) {
-            UIKit::ef_select([
+            $return = UIKit::ef_select([
                 'Acknowledge terms of service',
                 'tos_acceptance'
-            ])->hideLabel()
+            ])->checkbox()->hideLabel()
             ->options(
                 [
                     'true I have read and agree to the',
@@ -226,7 +229,7 @@ class CreateViewController extends ControllerBase
         $tosLink = '';
         if ($this->hasTosLink) {
             $tosLink = UIKit::link([
-                'terms of service',
+                ' terms of service',
                 url(config('registered.tos_url'))
             ]);
         }

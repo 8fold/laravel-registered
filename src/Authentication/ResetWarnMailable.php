@@ -1,13 +1,15 @@
 <?php
 
-namespace Eightfold\Registered\Mail;
+namespace Eightfold\Registered\Authentication;
+
+use Illuminate\Mail\Mailable;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
+
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class UserResetEmailWarn extends Mailable
+class ResetWarnMailable extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -29,6 +31,6 @@ class UserResetEmailWarn extends Mailable
      */
     public function build()
     {
-        return $this->view('registered::workflow-forgot.email-reset-warn');
+        return $this->view('authentication::reset-warn-email');
     }
 }
