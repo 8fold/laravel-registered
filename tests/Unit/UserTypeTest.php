@@ -6,7 +6,7 @@ use Eightfold\Registered\Tests\TestCase;
 
 use Eightfold\Registered\Tests\Stubs\User;
 
-use Eightfold\Registered\Models\UserType;
+use Eightfold\Registered\UserType\UserType;
 
 class UserTypeTest extends TestCase
 {
@@ -14,6 +14,7 @@ class UserTypeTest extends TestCase
     {
         $this->assertTrue(UserType::all()->count() == 2);
     }
+
     public function testWithSlugsReturnsArrayOfUserTypes()
     {
         $withSlugs = UserType::withSlugs(['owners', 'users']);

@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\Registered\Authentication;
+namespace Eightfold\Registered\Password;
 
 use Eightfold\Registered\ControllerBase;
 
@@ -11,7 +11,7 @@ use Eightfold\UIKit\UIKit;
 use Eightfold\LaravelUIKit\UIKit as LaravelUI;
 use Eightfold\LaravelUIKit\Forms\Form;
 
-class ResetViewController extends ControllerBase
+class ResetForm extends ControllerBase
 {
     public function reset(Request $request)
     {

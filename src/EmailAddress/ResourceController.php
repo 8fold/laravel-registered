@@ -57,9 +57,4 @@ class ResourceController extends ControllerBase
 
         return $this->back($alert);
     }
-
-    private function back(Alert $alert)
-    {
-        return back()->with('message', $alert);
-    }
 }

@@ -19,6 +19,11 @@ use Eightfold\LaravelUIKit\UIKit as LaravelUI;
 
 class UpdateViewController extends ControllerBase
 {
+    public function __construct()
+    {
+        $this->middleware(['web', 'auth', 'registered-only-me']);
+    }
+
     public function edit(string $username)
     {
         $user = Auth::user();
@@ -26,7 +31,7 @@ class UpdateViewController extends ControllerBase
         $header = 'Edit Profile';
         // TODO: Move "8fold Professionals" to the config
         $pageTitle = $header .' | 8fold Professionals';
-        $userNav = parent::getUserNav($user);
+        $userNav = parent::getUserNav(parent::isMe($username));
         $editAvatar = $this->avatarSection($user);
         $editNames = $this->namesSection($user);
         $editSites = $this->siteAddressSection($user);
@@ -94,8 +99,10 @@ class UpdateViewController extends ControllerBase
                     ->optional()
                 ],
                 [
-                    UIKit::ef_button(['Delete picture', 'delete', 'true'])
-                        ->type('secondary'),
+                    (is_null($user->profile->avatar))
+                        ? ''
+                        : UIKit::ef_button(['Delete picture', 'delete', 'true'])
+                            ->type('secondary'),
                     UIKit::ef_button('Upload picture')
                 ]
             ])->attr('enctype multipart/form-data');

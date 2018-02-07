@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-use Eightfold\Registered\Models\UserType;
+use Eightfold\Registered\UserType\UserType;
 
 class CreateUserTypesTable extends Migration
 {

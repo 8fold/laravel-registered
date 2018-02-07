@@ -1,6 +1,6 @@
 <?php
 
-namespace Eightfold\Registered\Authentication;
+namespace Eightfold\Registered\Password;
 
 use Eightfold\Registered\ControllerBase;
 
@@ -14,7 +14,7 @@ use Eightfold\UIKit\UIKit;
 use Eightfold\LaravelUIKit\UIKit as LaravelUI;
 use Eightfold\LaravelUIKit\Forms\Form;
 
-class CreateViewController extends ControllerBase
+class CreateForm extends ControllerBase
 {
     public function create(Request $request, string $username)
     {

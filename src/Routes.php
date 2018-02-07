@@ -1,177 +1,196 @@
 <?php
 
-use Eightfold\Registered\Registration\CreateViewController as RegisterVC;
-use Eightfold\Registered\Registration\ResourceController as RegistrationRC;
-use Eightfold\Registered\Registration\ConfirmationMessageViewController as RegistrationThankYouVC;
-use Eightfold\Registered\Registration\ConfirmRedirectController as RegisterConfirmVC;
-use Eightfold\Registered\Registration\UpdateViewController as RegisterUpdateVC;
+$registeredUserTypes = Eightfold\Registered\UserType\UserType::userTypesForRoutes();
 
-use Eightfold\Registered\Authentication\CreateViewController as PasswordCreateVC;
-use Eightfold\Registered\Authentication\ResourceController as PasswordRC;
+// Invitation -> Registration -> Sign in -> Sign out (forgot and reset)
+Route::get('/invitations',
+    Eightfold\Registered\Invitation\CreateViewController::class .
+        '@index');
 
-use Eightfold\Registered\Profile\ShowViewController as ProfileShowVC;
-use Eightfold\Registered\Profile\UpdateViewController as ProfileUpdateVC;
+Route::post('/invitations',
+    Eightfold\Registered\Invitation\ResourceController::class .
+        '@send');
 
-use Eightfold\Registered\Authentication\AuthController as AuthC;
-use Eightfold\Registered\Authentication\ResourceController as AuthRC;
-use Eightfold\Registered\Authentication\AuthViewController as AuthVC;
-use Eightfold\Registered\Authentication\ForgotViewController as AuthForgotVC;
-use Eightfold\Registered\Authentication\ResetViewController as AuthResetVC;
+// Route::post('/invitations/{invitation}',
+//     Eightfold\Registered\Invitation\ResourceController::class .
+//         '@resend');
 
-use Eightfold\Registered\EmailAddress\ResourceController as EmailRC;
+// Route::get('register',
+//     Eightfold\Registered\Registration\Register::class .
+//         '@register')->name('register');
 
-use Eightfold\Registered\Profile\ResourceController as ProfileRC;
+// Route::post('register',
+//     Eightfold\Registered\Registration\ResourceController::class .
+//         '@store');
 
-use Eightfold\Registered\SiteAddress\ResourceController as SiteRC;
+// Route::get('registered',
+//     Eightfold\Registered\Registration\ConfirmationMessage::class .
+//         '@registered');
 
-use Eightfold\Registered\Invitation\CreateViewController as InviteVC;
-use Eightfold\Registered\Invitation\ResourceController as InviteRC;
+// Route::get('login',
+//     Eightfold\Registered\Authentication\LoginForm::class .
+//         '@loginForm')->name('login');
 
-/**
- * GET  /register - registration form
- * POST /register - process registration form
- * GET  /registered - thank you message
- * GET  {user-types}/{username}/confirm-registration - redirect handler. Passed,
- *          redirect to /create-password. Failed, redirect to /register
- * GET  {user-types}/{username}/create-password - create password form
- * POST {user-types}/{username}/create-password - save password. Redirect
- *          to /{user-types}/{username}
- */
+// Route::post('login',
+//     Eightfold\Registered\Authentication\Login::class .
+//         '@login');
 
-Route::group([
-        'prefix' => 'invitations',
-        'middleware' => ['web', 'auth']
-    ], function() {
+// Route::post('/logout',
+//     Eightfold\Registered\Authentication\Logout::class .
+//         '@logout')->name('logout');
 
-    Route::get('/', InviteVC::class .'@index');
+// Route::get('/logout',
+//         function() { return redirect('/'); })
+//     ->middleware('web');
 
-    Route::post('/', InviteRC::class .'@send');
-    Route::post('/{invitation}', InviteRC::class .'@resend');
-});
+// Route::get('/forgot-password',
+//     Eightfold\Registered\Password\ForgotForm::class .
+//         '@forgotPasswordForm');
 
-Route::group([
-        'middleware' => ['web']
-    ], function() {
-    Route::get('register', RegisterVC::class .'@create')
-        ->name('register');
-    Route::post('register', RegistrationRC::class .'@store');
+// Route::post('/forgot-password',
+//     Eightfold\Registered\Password\SendForgotEmail::class .
+//         '@sendForgotPasswordEmail');
 
-    // RegisterConfirmationViewController
-    Route::get('registered', RegistrationThankYouVC::class .'@registered');
+// Route::get('/reset-password',
+//     Eightfold\Registered\Password\ResetForm::class .
+//         '@reset');
 
-    // InvitationRequestResourceController
-    // Route::post('/register/request-invite',
-    //     RegisterConfirmationViewController::class .'@requestInvite');
+// Route::post('/reset-password',
+//     Eightfold\Registered\Password\Reset::class .
+//         '@reset');
 
-    Route::get('/forgot-password', AuthForgotVC::class);
-    Route::post('/forgot-password', AuthRC::class .'@forgot');
+// // Manage user types
+// Route::get('/owners/user-types',
+//     Eightfold\Registered\UserType\ManageViewController::class .
+//         '@manage')->name('add-user-type');
 
-    Route::get('/reset-password', AuthResetVC::class .'@reset');
-    Route::post('/reset-password', AuthRC::class .'@reset');
+// Route::post('/owners/user-types',
+//     Eightfold\Registered\UserType\ResourceController::class .
+//         '@store');
 
-    Route::get('login', AuthVC::class .'@index')
-        ->name('login');
-    Route::post('login', AuthC::class .'@login');
+// // User areas
+// if ( ! \App::runningUnitTests()) {
+// foreach ($registeredUserTypes as $userPrefix) {
+//     $userTypeSlug = $userPrefix['slug'];
 
-    Route::post('/logout', AuthC::class .'@logout')
-        ->name('logout');
-    Route::get('/logout', function() {
-        return redirect('/');
-    });
-});
+//     // List users of type
+//     Route::get($userTypeSlug,
+//         Eightfold\Registered\UserType\Master::class .
+//             '@list');
 
-$usersController = Eightfold\Registered\Controllers\UsersController::class;
+//     // Show profile of user
+//     Route::get($userTypeSlug .'/{username}',
+//         Eightfold\Registered\Profile\Detail::class .
+//             '@show');
 
-Route::post('users/types', $usersController.'@processAddUserType')
-    ->middleware('web', 'auth')
-    ->name('add-user-type');
+//     // Manage user
+//     Route::get($userTypeSlug .'/{username}/manage',
+//         Eightfold\Registered\Authentication\ManageViewController::class .
+//             '@manage');
 
-if (!\App::runningUnitTests()) {
-    $userTypes = Eightfold\Registered\UserType\UserType::userTypesForRoutes();
+//     Route::patch($userTypeSlug .'/{username}/manage/update-type',
+//         Eightfold\Registered\UserType\ResourceController::class .
+//             '@update');
 
-    foreach ($userTypes as $userPrefix) {
-        $userTypeSlug = $userPrefix['slug'];
+//     // Complete registration, once known
+//     Route::get($userTypeSlug .'/{username}/confirm-registration',
+//         Eightfold\Registered\Registration\ConfirmRedirectController::class .
+//             '@redirect');
 
-        // User type lists.
-        Route::group([
-            'middleware' => ['web'],
-            'prefix' => $userTypeSlug
-        ], function() {
+//     Route::get($userTypeSlug .'/{username}/create-password',
+//         Eightfold\Registered\Password\CreateForm::class .
+//             '@create')->name($userTypeSlug .'.confirmation');
 
-            Route::get('/',
-                Eightfold\Registered\Controllers\UsersIndexViewController::class .
-                '@index');
-        });
+//     Route::post($userTypeSlug .'/{username}/create-password',
+//         Eightfold\Registered\Password\Create::class .
+//             '@create')->name($userTypeSlug .'.establishPassword');
 
-        // View profile
-        Route::group([
-                'prefix' => $userTypeSlug .'/{username}',
-                'middleware' => ['web']
-            ], function() use ($userTypeSlug) {
+//     // Editing passowrd and emails
+//     Route::get($userTypeSlug .'/{username}/account',
+//         Eightfold\Registered\Registration\UpdateViewController::class .
+//             '@update')
 
-            Route::get('/create-password',
-                    PasswordCreateViewController::class .'@create')
-                ->name($userTypeSlug .'.confirmation');
-            Route::post('/create-password', PasswordController::class .'@create')
-                ->name($userTypeSlug .'.establishPassword');
+//         ->middleware('web', 'auth', 'registered-only-me');
 
+//     Route::get($userTypeSlug .'/{username}/edit',
+//         Eightfold\Registered\Profile\UpdateViewController::class .
+//             '@edit');
 
-            Route::get('/', ProfileShowVC::class .'@show');
+//     Route::post($userTypeSlug .'/{username}/edit',
+//         Eightfold\Registered\Profile\ResourceController::class .
+//             '@updateNames')
 
-            Route::get('/confirm-registration', RegisterConfirmVC::class .'@redirect');
+//         ->middleware('web', 'auth', 'registered-only-me');
 
-            Route::get('/create-password', PasswordCreateVC::class .'@create')
-                ->name($userTypeSlug .'.confirmation');
-            Route::post('/create-password', PasswordRC::class .'@create')
-                ->name($userTypeSlug .'.establishPassword');
+//     // Editing sites.
+//     Route::post($userTypeSlug .'/{username}/sites',
+//         Eightfold\Registered\SiteAddress\ResourceController::class .
+//             '@create')
 
-            // Route::get('/set-password', PasswordSetViewController::class .'@index'
-            // )->name($userTypeSlug .'.showEstablishPasswordForm');
-            // Route::post('/set-password', PasswordController::class .'@update')
-            // Route::get('/set-password', PasswordSetViewController::class .'@index'
-            // )->name($userTypeSlug .'.showEstablishPasswordForm');
-            // Route::post('/set-password', PasswordController::class .'@update')
+//         ->middleware('web', 'auth', 'registered-only-me')
+//         ->name('profiled.'. $userTypeSlug .'.add-site');
 
-        });
+//     Route::patch($userTypeSlug .'/{username}/sites/{public_key}',
+//         Eightfold\Registered\SiteAddress\ResourceController::class .
+//             '@update')
 
-        // Editing profile
-        Route::group([
-                'prefix' => $userTypeSlug .'/{username}',
-                'middleware' => ['web', 'auth', 'registered-only-me']
-            ], function() use ($userTypeSlug) {
-                // View edit profile forms
-                Route::get('/account', RegisterUpdateVC::class .'@update');
+//         ->middleware('web', 'auth', 'registered-only-me')
+//         ->name('profiled.'. $userTypeSlug .'.update-site');
 
-                // Editing profile.
-                Route::get('/edit', ProfileUpdateVC::class .'@edit');
-                Route::post('/edit', ProfileRC::class .
-                    '@updateNames');
+//     Route::get($userTypeSlug .'/{username}/sites/{public_key}/delete',
+//         Eightfold\Registered\SiteAddress\ResourceController::class .
+//             '@delete')
 
-                // Editing sites.
-                Route::post('/sites', SiteRC::class .'@create')
-                    ->name('profiled.'. $userTypeSlug .'.add-site');
-                Route::patch('/sites/{public_key}', SiteRC::class .'@update')
-                    ->name('profiled.'. $userTypeSlug .'.update-site');
-                Route::get('/sites/{public_key}/delete', SiteRC::class .'@delete')
-                    ->name('profiled.'. $userTypeSlug .'.delete-site');
+//         ->middleware('web', 'auth', 'registered-only-me')
+//         ->name('profiled.'. $userTypeSlug .'.delete-site');
 
-                // Editing password.
-                Route::post('/update-password', PasswordRC::class .'@update');
+//     // Editing password.
+//     Route::post($userTypeSlug .'/{username}/update-password',
+//         Eightfold\Registered\Authentication\ResourceController::class .
+//             '@update')
 
-                // Editing emails.
-                Route::post('/email-addresses', EmailRC::class .'@create');
-                Route::post('/email-addresses/primary', EmailRC::class .'@primary');
-                Route::post('/email-addresses/delete', EmailRC::class .'@delete');
+//         ->middleware('web', 'auth', 'registered-only-me');
 
-                // Editing avatar.
-                Route::post('/avatar', ProfileRC::class .'@saveAvatar')
-                    ->name('profiled.'. $userTypeSlug .'.avatar.add');
-                Route::get('/avatar/delete', ProfileRC::class .'@deleteAvatar')
-                    ->name('profiled.'. $userTypeSlug .'.avatar.delete');
+//     // Editing emails.
+//     Route::post($userTypeSlug .'/{username}/email-addresses',
+//         Eightfold\Registered\EmailAddress\ResourceController::class .
+//             '@create')
 
-                // Editing biography
-                // TODO: Should probably be `put` method.
-                Route::post('/biography', ProfileRC::class .'@updateBiography');
-        });
-    }
-}
+//         ->middleware('web', 'auth', 'registered-only-me');
+
+//     Route::post($userTypeSlug .'/{username}/email-addresses/primary',
+//         Eightfold\Registered\EmailAddress\ResourceController::class .
+//             '@primary')
+
+//         ->middleware('web', 'auth', 'registered-only-me');
+
+//     Route::post($userTypeSlug .'/{username}/email-addresses/delete',
+//         Eightfold\Registered\EmailAddress\ResourceController::class .
+//             '@delete')
+
+//         ->middleware('web', 'auth', 'registered-only-me');
+
+//     // Editing avatar.
+//     Route::post($userTypeSlug .'/{username}/avatar',
+//         Eightfold\Registered\Profile\ResourceController::class .
+//             '@saveAvatar')
+
+//         ->middleware('web', 'auth', 'registered-only-me')
+//         ->name('profiled.'. $userTypeSlug .'.avatar.add');
+
+//     Route::get($userTypeSlug .'/{username}/avatar/delete',
+//         Eightfold\Registered\Profile\ResourceController::class .
+//             '@deleteAvatar')
+
+//         ->middleware('web', 'auth', 'registered-only-me')
+//         ->name('profiled.'. $userTypeSlug .'.avatar.delete');
+
+//     // Editing biography
+//     // TODO: Should probably be `put` method.
+//     Route::post($userTypeSlug .'/{username}/biography',
+//         Eightfold\Registered\Profile\ResourceController::class .
+//             '@updateBiography')
+
+//         ->middleware('web', 'auth', 'registered-only-me');
+//     }
+// }

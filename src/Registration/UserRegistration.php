@@ -281,8 +281,14 @@ class UserRegistration extends Model
         return $this->getPrimaryTypeAttribute();
     }
 
+    /**
+     * @todo Revisit. Site needs an owner. However, the owner does not need to be the
+     *       the primary user type.
+     * @param UserType $type [description]
+     */
     public function setPrimaryTypeAttribute(UserType $type): UserType
     {
+        // TODO: Not sure this is working this the way it is supposed to.
         // Get the ids for all my current types.
         $current = $this->types()->pluck('id')->toArray();
         $targetId = $type->id;
@@ -320,10 +326,11 @@ class UserRegistration extends Model
         return true;
     }
 
-    public function updateTypes(string $primaryType, array $typeSlugs): UserRegistration
+    public function updateTypes(
+        string $primaryType, array $typeSlugs): UserRegistration
     {
+        $this->types = UserType::withSlugs($typeSlugs)->get();
         $this->primaryType = UserType::withSlug($primaryType)->first();
-        $this->primaryTypes = UserType::withSlugs($typeSlugs)->get();
         return $this;
     }
 

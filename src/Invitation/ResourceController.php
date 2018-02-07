@@ -19,6 +19,11 @@ Use Eightfold\UIKit\UIKit;
 
 class ResourceController extends ControllerBase
 {
+    public function __construct()
+    {
+        $this->middleware(['web', 'auth']);
+    }
+
     public function send(Request $request)
     {
         Validator::make($request->all(), ['email' => UserEmailAddress::validation()])

@@ -17,15 +17,20 @@ use Eightfold\LaravelUIKit\UIkit as LaravelUI;
 
 class UpdateViewController extends ControllerBase
 {
-    public function update($username, Request $request)
+    public function update(Request $request, $username)
     {
         $header = 'Manage account';
 
         $user = Auth::user();
+
         $displayName = $user->registration->displayName;
+
         $pageTitle = 'Manage Account | '. $displayName .' | 8fold Professionals';
-        $userNav = parent::getUserNav($user);
+
+        $userNav = parent::getUserNav($user->isMe($username));
+
         $passwordSection = $this->getUpdatePasswordSection($user);
+
         $emailSection = $this->getUpdateEmailAddressesSection($user);
 
         return view('main')

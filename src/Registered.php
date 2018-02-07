@@ -23,7 +23,7 @@ class Registered extends LaravelServiceProvider
         $router = $this->app['router'];
         $router->aliasMiddleware('registered-only-me', RedirectIfNotMe::class);
 
-        $this->loadMigrationsFrom(__DIR__.'/DatabaseMigrations');
+        $this->loadMigrationsFrom(__DIR__.'/Framework/DatabaseMigrations');
 
         $this->publishes([
                 __DIR__.'/ConfigBase.php' => config_path('registered.php'),

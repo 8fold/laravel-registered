@@ -4,12 +4,14 @@ namespace Eightfold\Registered\Tests;
 
 use Orchestra\Testbench\TestCase as BaseTestCase;
 
+use Orchestra\Database\ConsoleServiceProvider;
+
 use Eightfold\Registered\Tests\Stubs\User;
 
-use Eightfold\Registered\RegisteredServiceProvider;
+use Eightfold\Registered\Registered;
 
-use Eightfold\Registered\Models\UserType;
-use Eightfold\Registered\Models\UserInvitation;
+use Eightfold\Registered\UserType\UserType;
+use Eightfold\Registered\Invitation\UserInvitation;
 use Eightfold\Registered\Registration\UserRegistration;
 
 abstract class TestCase extends BaseTestCase
@@ -17,10 +19,10 @@ abstract class TestCase extends BaseTestCase
     public function setUp()
     {
         parent::setUp();
-        $this->loadMigrationsFrom([
-            '--database' => 'testing',
-            '--path' => realpath(__DIR__.'/../src/migrations'),
-        ]);
+
+        // $this->loadLaravelMigrations(['--database' => 'testing']);
+
+        $this->loadMigrationsFrom(realpath(__DIR__.'/../src/Framework/DatabaseMigrations'));
 
         $this->artisan('migrate', ['--database' => 'testing']);
     }
@@ -28,13 +30,16 @@ abstract class TestCase extends BaseTestCase
     protected function getPackageProviders($app)
     {
         return [
-            RegisteredServiceProvider::class
+            ConsoleServiceProvider::class,
+            Registered::class
         ];
     }
 
     protected function getEnvironmentSetUp($app)
     {
         $this->app = $app;
+
+        $app['config']->set('registered.invitations.required', true);
 
         // Setup default database to use sqlite :memory:
         $app['config']->set('database.default', 'testing');

@@ -6,7 +6,7 @@ use Eightfold\Registered\ControllerBase;
 
 use Eightfold\UIKit\UIKit;
 
-class ConfirmationMessageViewController extends ControllerBase
+class ConfirmationMessage extends ControllerBase
 {
     public function registered()
     {
