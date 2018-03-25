@@ -8,9 +8,9 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 
 use Eightfold\Registered\Tests\Stubs\User;
 
-use Eightfold\Registered\Models\UserType;
-use Eightfold\Registered\Models\UserInvitation;
-use Eightfold\Registered\Models\UserRegistration;
+use Eightfold\Registered\UserType\UserType;
+use Eightfold\Registered\Invitation\UserInvitation;
+use Eightfold\Registered\Registration\UserRegistration;
 
 /**
  * @todo Need to have a user model solution that works.

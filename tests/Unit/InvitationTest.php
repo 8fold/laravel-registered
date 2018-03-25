@@ -6,8 +6,8 @@ use Eightfold\Registered\Tests\TestCase;
 
 use Eightfold\Registered\Tests\Stubs\User;
 
-use Eightfold\Registered\Models\UserInvitation;
-use Eightfold\Registered\Models\UserRegistration;
+use Eightfold\Registered\Invitation\UserInvitation;
+use Eightfold\Registered\Registration\UserRegistration;
 
 class InvitationTest extends TestCase
 {

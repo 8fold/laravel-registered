@@ -8,9 +8,9 @@ use DB;
 
 use Eightfold\Registered\Tests\Stubs\User;
 
-use Eightfold\Registered\Models\UserType;
-use Eightfold\Registered\Models\UserInvitation;
-use Eightfold\Registered\Models\UserRegistration;
+use Eightfold\Registered\UserType\UserType;
+use Eightfold\Registered\Invitation\UserInvitation;
+use Eightfold\Registered\Registration\UserRegistration;
 
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Collection;
@@ -44,7 +44,7 @@ class RegistrationTest extends TestCase
     {
         $registration = $this->registerUser();
         $this->assertNotNull($registration);
-        $expect = '/owners/someone/confirm?token='. $registration->token;
+        $expect = '/owners/someone/confirm-registration?token='. $registration->token;
         $result = $registration->confirmUrl;
         $isSame = ($expect == $result);
         $this->assertTrue($isSame, "result: ". $result ."\nexpect: ". $expect);
