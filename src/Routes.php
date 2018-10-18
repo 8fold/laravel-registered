@@ -68,15 +68,15 @@ Route::post('/invitations',
 //     Eightfold\Registered\UserType\ResourceController::class .
 //         '@store');
 
-// // User areas
-// if ( ! \App::runningUnitTests()) {
-// foreach ($registeredUserTypes as $userPrefix) {
-//     $userTypeSlug = $userPrefix['slug'];
+// User areas
+if ( ! \App::runningUnitTests()) {
+foreach ($registeredUserTypes as $userPrefix) {
+    $userTypeSlug = $userPrefix['slug'];
 
-//     // List users of type
-//     Route::get($userTypeSlug,
-//         Eightfold\Registered\UserType\Master::class .
-//             '@list');
+    // List users of type
+    Route::get($userTypeSlug,
+        Eightfold\Registered\UserType\Master::class .
+            '@list');
 
 //     // Show profile of user
 //     Route::get($userTypeSlug .'/{username}',
@@ -192,5 +192,5 @@ Route::post('/invitations',
 //             '@updateBiography')
 
 //         ->middleware('web', 'auth', 'registered-only-me');
-//     }
-// }
+    }
+}

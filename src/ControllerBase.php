@@ -88,8 +88,8 @@ abstract class ControllerBase extends Controller
         }
 
         return UIKit::user_card(
-              'Picture of '. $userRegistration->displayName
-            , url($src)
+              Component::text('Picture of '. $userRegistration->displayName)
+            , Component::text(url($src))
         );
     }
 }

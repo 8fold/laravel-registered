@@ -67,15 +67,13 @@ class Master extends ControllerBase
 
         $registrationLinks = [];
         foreach ($registrations as $registration) {
+            $registrationString = $this->getAvatarFigure($registration)->compile()
+                        . Html::span(Component::text('Profile for'))->compile()
+                        . Html::span(Component::text(' '. $registration->displayName))->compile();
+
             $registrationLinks[] = Html::li(
                     UIKit::link(
-                          $this->getAvatarFigure($registration)
-                            ->compile()
-                        . Html::span(Component::text('Profile for'))
-                            ->compile()
-                        . Html::span(Component::text(' '. $registration->displayName))
-                            ->compile()
-
+                          $registrationString
                         , url($registration->profilePath)
                     )
                 );
