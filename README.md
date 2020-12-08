@@ -1,3 +1,9 @@
+ARCHIVED: Recommend using Laravel Fortify and similar - 
+
+- https://jetstream.laravel.com/1.x/introduction.html
+- https://github.com/laravel/fortify
+- https://github.com/zacksmash/fortify-ui
+
 NOTE: I have temporarily stopped maintaining the views in this package as it is still in serious beta-mode; however, I plan to update them as new methods of handling the presentation layer present themselves.
 
 # Registered for Laravel 5.5+ by 8fold
